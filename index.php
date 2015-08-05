@@ -17,13 +17,19 @@ require_once 'config/config.php';
 <body>
 
 <style>
-    html, body,.wrapper {
+    html, body, .wrapper {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
     }
-	.wrapper{max-width:640px;overflow: hidden;margin:0 auto;}
+
+    .wrapper {
+        max-width: 640px;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
     .con {
         width: 100%;
         height: 100%;
@@ -44,7 +50,7 @@ require_once 'config/config.php';
     }
 
     .con .active {
-        display: inline-block ;
+        display: inline-block;
     }
 
     .con .page > img {
@@ -70,70 +76,71 @@ require_once 'config/config.php';
     })
     ;
     $(function () {
-        document.title=$(document.body).width()+","+$(document.body).height();
+        document.title = $(document.body).width() + "," + $(document.body).height();
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length);
         //if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://192.168.2.2:8002/wx/cb.php');
     });
 </script>
 <div class="wrapper">
-<div class="con">
-    <div class="page ready active">
-        <img id="img1" src="img/5-0.png" usemap="map">
-        <map id="map" name="map">
-            <area id="btnGo" shape="rect" coords="178,820,479,914"/>
-        </map>
-        <script type="text/javascript">
-            $("#img1").click(function () {
-                $(this).showNext();
-            })
-            ;
-        </script>
+    <div class="con">
+        <div class="page ready active">
+            <img id="img1" src="img/5-0.png" usemap="map">
+            <map id="map" name="map">
+                <area id="btnGo" shape="rect" coords="178,820,479,914"/>
+            </map>
+            <script type="text/javascript">
+                $("#img1").click(function () {
+                    $(this).showNext();
+                })
+                ;
+            </script>
+        </div>
+
+        <div class="page choose">
+            <img src="img/5-1.png" id="btnCheck">
+
+            <script type="text/javascript">
+                $("#btnCheck").click(function () {
+                    var self = this;
+                    $.ajax({
+                        url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
+                            dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)]
+                        }, wx.user),
+                        success: function (data) {
+                            $("#lblMsg").text(data.msg[0]);
+                            $("#lblMsg2").text(data.msg[1]);
+                            $(self).showNext();
+                        },
+                    });
+                })
+                ;
+            </script>
+        </div>
+
+        <div class="page result" style="position: relative;">
+            <img src="img/5-2.png">
+
+            <style>
+                #lblMsg, #lblMsg2 {
+                    position: absolute;
+                    top: 1em;
+                    right: 0em;
+                    font-size: 2em;
+                    background-color: #FCA900;
+                }
+
+                #lblMsg2 {
+                    top: 2.5em;
+                }
+            </style>
+            <div id="lblMsg" style="" onclick="$('.con').css('transform','translateX(0) ')"></div>
+            <div id="lblMsg2" style="" onclick="$('.con').css('transform','translateX(0) ')"></div>
+        </div>
+
+        <div class="page pk">
+
+        </div>
     </div>
-
-    <div class="page choose">
-        <img src="img/5-1.png" id="btnCheck">
-
-        <script type="text/javascript">
-            $("#btnCheck").click(function () {
-                var self = this;
-                $.ajax({
-                    url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
-                        dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)]
-                    }, wx.user),
-                    success: function (data) {
-                        $("#lblMsg").text(data.msg[0]);
-                        $("#lblMsg2").text(data.msg[1]);
-                        $(self).showNext();
-                    }
-                });
-            })
-            ;
-        </script>
-    </div>
-
-    <div class="page result" style="position: relative;">
-        <img src="img/5-2.png">
-
-        <style>
-            #lblMsg,#lblMsg2 {
-                position: absolute;
-                top: 1em;
-                right: 0em;
-                font-size: 2em;
-                background-color: #FCA900;
-            }
-			#lblMsg2{
-				top:2.5em;
-			}
-        </style>
-        <div id="lblMsg" style="" onclick="$('.con').css('transform','translateX(0) ')"></div>
-        <div id="lblMsg2" style="" onclick="$('.con').css('transform','translateX(0) ')"></div>
-    </div>
-
-    <div class="page pk">
-
-    </div>
-</div>
-<div>
+    <div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * Created by Dong on 2015-08-01.
  */
-onerror = function (m) {alert(m)};
+//onerror = function (m) {alert(m)};
 
 wx = window.wx || {}, wx.config = wx.config || {}, wx.user = wx.user || {};
 wx.snsConfig = {
