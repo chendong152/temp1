@@ -22,5 +22,5 @@ function check() {
     //todo:
 
     //鉴定
-    return array('code' => 0, 'score' => 1, 'msg' => getText($merge));
+    return array('code' => 0, 'score' => 1, 'msg' =>getText($merge) );
 }
