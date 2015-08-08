@@ -9,20 +9,11 @@
 require_once __DIR__ . '/dish.php';
 
 class User {
-    /**
-     * @var array  array of Dish，选中的菜品
-     */
-    public $dishes = array();
 
     public $openid;
     public $nickname;
     public $header_img;
 
-    public $score_high;
-    public $score_low;
-
-    public $result_kind;
-    public $result_detail;
 
     /**
      * 计算相似度
@@ -43,7 +34,42 @@ class User {
     }
 
     public static function from($data) {
-        $c = new ReflectionClass('User');
+        $c = new ReflectionClass(self);
+        $ps = $c->getProperties();
+        $ret = new User();
+        foreach ($ps as $p) {
+            if (array_key_exists($p->name, $data)) $p->setValue($ret, $data[$p->name]);
+        }
+        return $ret;
+    }
+}
+
+class Record {
+    public $id;
+    public $openid;
+
+    /**
+     * array of Dish，选中的菜品
+     * @var array
+     */
+    public $dishes = array();
+
+    /**
+     * 选择的菜品总分集合
+     * @var array
+     */
+    public $style = array();
+
+    public $score_high;
+    public $score_low;
+
+    public $result_kind;
+    public $result_detail;
+
+    public $create_time;
+
+    public static function from($data) {
+        $c = new ReflectionClass(self);
         $ps = $c->getProperties();
         $ret = new User();
         foreach ($ps as $p) {

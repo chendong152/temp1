@@ -28,6 +28,13 @@ class Dish {
         $this->name = $name;
     }
 
+    public function  toArray() {
+        $ret = array();
+        foreach (self::getPs() as $k)
+            $ret[$k] = $this->$k;
+        return $ret;
+    }
+
     public static function  getPs() {
         return array(
             'stuff',
@@ -37,6 +44,7 @@ class Dish {
             'costEffective',
         );
     }
+
 
     public static function  merge($arr) {
         $merge = new Dish();

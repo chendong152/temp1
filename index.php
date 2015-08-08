@@ -13,58 +13,17 @@ require_once 'config/config.php';
 <html>
 <head>
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+
+    <link rel="stylesheet" href="css/base.css"/>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/wxsns.js"></script>
+    <script src="js/jquery.transit.min.js"></script>
+
 </head>
 <body>
-
-<style>
-    html, body, .wrapper {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    .wrapper {
-        max-width: 640px;
-        overflow: hidden;
-        margin: 0 auto;
-    }
-
-    .con {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        transition: 0.5s;
-        -webkit-transition: 0.5s;
-        transform: translate(0%, 0);
-    }
-
-    .con .page {
-        display: inline-block;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        border: none;
-        float: left;
-    }
-
-    .con .active {
-        display: inline-block;
-    }
-
-    .con .page > img {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        border: none;
-    }
-
-</style>
-<script src="js/jquery.min.js"></script>
-<script src="js/util.js"></script>
-<script src="js/wxsns.js"></script>
 <script type="text/javascript">
+    //onload = function () {alert("loaded")}
     $.fn.extend({
         showNext: function () {
             var self = this;
@@ -83,13 +42,17 @@ require_once 'config/config.php';
 </script>
 <div class="wrapper">
     <div class="con">
-        <div class="page ready active">
-            <img id="img1" src="img/5-0.png" usemap="map">
-            <map id="map" name="map">
-                <area id="btnGo" shape="rect" coords="178,820,479,914"/>
-            </map>
+        <div class="page active page1">
+            <img class="img1 animate" src="img/1/yun1.png"/>
+            <img class="img2 animate" src="img/1/shuishinidecai.png"/>
+            <img class="img2-2 animate" src="img/1/xuntongkuanchihuo.png"/>
+            <img class="img3 animate" src="img/1/cai.png"/>
+            <img class="img4 animate" src="img/1/nan.png"/>
+            <img class="img5 animate" src="img/1/nv.png"/>
+            <img class="img6 animate" src="img/1/start.png"/>
+            <img class="img7 animate" src="img/1/youxishuoming.png"/>
             <script type="text/javascript">
-                $("#img1").click(function () {
+                $(".page1 .img6").click(function () {
                     $(this).showNext();
                 })
                 ;

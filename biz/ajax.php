@@ -21,18 +21,40 @@ function check() {
     $dishes = array($allDishes[$ds[0]], $allDishes[$ds[1]], $allDishes[$ds[2]]);
     $merge = Dish::merge($dishes);
 
-    //记录结果到库:用户基本信息、选择的3个菜品、最高分和最低分键值对、结果鉴定语、时间 (重玩时覆盖)
+    //记录结果到库:用户基本信息、选择的3个菜品、最高分和最低分键值对、结果鉴定语、时间 (重玩时更新用户信息，新增游戏数据)
     //todo:
     $data = array(
         'nickname'   => "dong",
-        'openid'     => "openid" . floor(rand(1, 1000)),
+        'openid'     => "openid" . floor(rand(1, 10)),
         'header_img' => '',
-        'dishes'     => implode(',', $ds),
     );
-    $db->insert("user")->data($data)->done();
+    $exists = $db->select("user")->where("openid='{$data['openid']}'")->limit(1)->done();
+    if ($exists) {
+        $data['update_time'] = time();
+        $db->update('user')->where("openid='{$data['openid']}'");
+    } else {
+        $db->insert('user');
+    }
+    $db->data($data)->done();
 
     //鉴定
-    return array('code' => 0, 'score' => 1, 'msg' => getText($merge));
+    $texts = getText($merge);
+    $scores = getScore($merge);
+
+    //游戏记录
+    $data = array(
+        'openid'        => $data['openid'],
+        'dishes'        => implode(',', $ds),
+        'style'         => implode(',', array_values($merge->toArray())),
+        'score_high'    => key($scores['high']) . ':' . current($scores['high']),
+        'score_low'     => key($scores['low']) . ':' . current($scores['low']),
+        'result_kind'   => $texts[0],
+        'result_detail' => $texts[1],
+    );
+    $db->insert("user_record")->data($data)->done();
+
+    //鉴定
+    return array('code' => 0, 'score' => 1, 'msg' => $texts);
 }
 
 function t() {
@@ -42,6 +64,7 @@ function t() {
     if ($data) $data = $data[0];
     print_r($data);
     $u = User::from($data);
+    print_r(new DateTime($data['create_time']));
     print_r($u);
     $u->dishes = array(
         new Dish(3, 1, 5, 1, 1, '大鱼'),
