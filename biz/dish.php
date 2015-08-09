@@ -46,7 +46,7 @@ class Dish {
     }
 
 
-    public static function  merge($arr) {
+    public static function  merge(array $arr) {
         $merge = new Dish();
         foreach ($arr as $dish) {
             $merge->stuff += $dish->stuff;

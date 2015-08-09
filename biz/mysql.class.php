@@ -8,6 +8,7 @@
  */
 
 include_once __DIR__ . '/../config/config.php';
+error_reporting(~E_WARNING & ~E_NOTICE);
 
 class Mysql {
     // 默认配置

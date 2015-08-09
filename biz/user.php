@@ -20,21 +20,29 @@ class User {
      * @param $friend
      *
      */
-    public function match(User $friend) {
-        $ud = Dish::merge($this->dishes);
-        $fd = Dish::merge($friend->dishes);
+    public function matchWith(User $friend) {
+        return self::match($this->dishes, $friend->dishes);
+    }
+
+    /** 根据选择的3种菜品，计算出相似度
+     * @param $dishes1
+     * @param $dishes2
+     * @return float
+     */
+    public static function match($dishes1, $dishes2) {
+        $ud = Dish::merge($dishes1);
+        $fd = Dish::merge($dishes2);
         $score = min($ud->stuff, $fd->stuff) / max($ud->stuff, $fd->stuff)
             + min($ud->technic, $fd->technic) / max($ud->technic, $fd->technic)
             + min($ud->culture, $fd->culture) / max($ud->culture, $fd->culture)
             + min($ud->taste, $fd->taste) / max($ud->taste, $fd->taste)
             + min($ud->costEffective, $fd->costEffective) / max($ud->costEffective, $fd->costEffective);
-        $dishScore = count(array_uintersect($this->dishes, $friend->dishes, 'Dish::equal'));
-
+        $dishScore = count(array_uintersect($dishes1, $dishes2, 'Dish::equal'));
         return $score * 14 + $dishScore * 10;
     }
 
     public static function from($data) {
-        $c = new ReflectionClass(self);
+        $c = new ReflectionClass(__CLASS__);
         $ps = $c->getProperties();
         $ret = new User();
         foreach ($ps as $p) {
@@ -65,6 +73,9 @@ class Record {
 
     public $result_kind;
     public $result_detail;
+
+    public $from_openid;
+    public $similar;
 
     public $create_time;
 

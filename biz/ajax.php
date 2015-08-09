@@ -50,14 +50,24 @@ function check() {
         'score_low'     => key($scores['low']) . ':' . current($scores['low']),
         'result_kind'   => $texts[0],
         'result_detail' => $texts[1],
+        'from_id'       => isset($_REQUEST['from']) ? $_REQUEST['from'] : null,
     );
-    $db->insert("user_record")->data($data)->done();
+    //相似度
+    if (!empty($data['from_id'])) {
+        $rec = $db->select("user_record")->limit(1)->where("id=" . $data['from_id'])->done();//获取推荐人的游戏信息
+        $rec = $rec[0];
+        $data['similar'] = User::match(get_dish($rec['dishes']), get_dish($data['dishes']));
+        $data['from_openid'] = $rec['openid'];
+    }
+    $db->insert("user_record")->data($data)->done();//保存
 
-    //鉴定
     return array('code' => 0, 'score' => 1, 'msg' => $texts);
 }
 
 function t() {
+    $ddd = new Dish();
+    print_r(get_dish($ddd) === $ddd);
+
     //todo:从库中获取用户
     global $db;
     $data = $db->select('user')->where('1=1')->limit(1)->done();
@@ -74,5 +84,5 @@ function t() {
 
     $f = clone $u;
     $f->dishes = array_slice($f->dishes, 0, 2, true);
-    return $u->match($f);
+    return $u->matchWith($f);
 }
