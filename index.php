@@ -37,21 +37,21 @@ header('Content-Type: text/html;charset=utf-8')
             var self = this;
             while (self == null || !self.hasClass('page')) self = self.parent();
             self && self.removeClass('active').next(".page").addClass('active');
-            $(".con").css('transform', 'translateX(' + -$(".con>.page").width() * (self.index() + 1) + "px)");
-            return this;
+            return $(".con").css({transform: 'translate3d(' + -$(".con>.page").width() * (self.index() + 1) + "px,0,0)"});
+            //return $(".con").transition({x: -$(".con>.page").width() * (self.index() + 1)});
         },
     })
     ;
     $(function () {
         document.title = $(document.body).width() + "," + $(document.body).height();
-        $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length);
+        $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
         //if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://192.168.2.2:8002/wx/cb.php');
     });
 </script>
-<div class="wrapper">
-    <div class="loader">加哉中</div>
-    <div class="con">
-        <div class="page active page1">
+<div class="loader">加哉中</div>
+<div class="wrapper swiper-container2">
+    <div class="con swiper-wrapper2">
+        <div class="page swiper-slide2 active page1">
             <img class="img1 animate" src="img/1/yun1.png"/>
             <img class="img2 animate" src="img/1/shuishinidecai.png"/>
             <img class="img2-2 animate" src="img/1/xuntongkuanchihuo.png"/>
@@ -67,7 +67,8 @@ header('Content-Type: text/html;charset=utf-8')
             </script>
         </div>
 
-        <div class="page page2">
+        <div class="page swiper-slide2 page2" style="background: none;">
+            <img src="img/3/third.png" style="width: 100%;height: 100%;top:0;left:0"/>
             <script>
                 var dishList = <?echo json_encode($allDishes,1)?>;
             </script>
@@ -91,8 +92,8 @@ header('Content-Type: text/html;charset=utf-8')
             <div class="swiper-button-next-m"></div>
 
             <script>
-                var mySwiper = new Swiper('.swiper-container', {
-                    slidesPerView: 3, spaceBetween: 10,
+                var mySwiper = new Swiper('.page2 .swiper-container', {
+                    slidesPerView: 3, spaceBetween: 10,//freeMode:true,
                     direction: 'horizontal', loop: false,
                 });
                 $(".swiper-button-prev-m").click(function () {mySwiper.slidePrev()});
@@ -151,7 +152,7 @@ header('Content-Type: text/html;charset=utf-8')
             </script>
         </div>
 
-        <div class="page page3">
+        <div class="page swiper-slide2 page3">
             <img class="img31 animate" src="img/3/jiangpai.png">
 
             <div class="txt32 animate">
@@ -199,27 +200,41 @@ header('Content-Type: text/html;charset=utf-8')
             </script>
         </div>
 
-        <div class="page page4">
-            <img class="img41 animate" src="img/3/yun3_1.png"/>
-            <img class="img42 animate" src="img/3/nan_1.png"/>
-            <img class="img43 animate" src="img/3/header.png"/>
+        <div class="page swiper-slide2 page4">
+            <img class="img43 animate" src="img/h.png"/>
 
             <div class="txt44 animate">已找到1个同款</div>
-            <div class="items">
-                <img src="img/3/"/>
-                <dl>
-                    <dt><em>则卷</em>与你不是同款吃货</dt>
-                    <dd>他是<em>文艺级吃货</em></dd>
-                </dl>
-            </div>
-            <img class="img44 animate" src="img/3/quzhaotongkuan.png" id="btnPk">
-            <img class="img45 animate" src="">
+            <ul class="items animate">
+                <li class="thumb">
+                    <img class="head_img" src="img/h.png"></img>
+                    <dl>
+                        <dt><em>则卷</em>与你不是同款吃货</dt>
+                        <dd>他是<em>文艺级吃货</em></dd>
+                    </dl>
+                </li>
+                <li>
+                    <img src="img/h.png"/>
+                    <dl>
+                        <dt><em>则卷</em>与你不是同款吃货</dt>
+                        <dd>他是<em>文艺级吃货</em></dd>
+                    </dl>
+                </li>
+                <li>
+                    <img src="img/h.png"/>
+                    <dl>
+                        <dt><em>则卷</em>与你不是同款吃货</dt>
+                        <dd>他是<em>文艺级吃货</em></dd>
+                    </dl>
+                </li>
+            </ul>
+            <img class="img44 animate" src="img/4/chongxinfaqi.png" id="btnPk">
+            <img class="img45 animate" src="/img/4/chakanpaihang.png">
             <script type="text/javascript">
                 $("#btnPk").click(function () {$(this).showNext()});
             </script>
         </div>
 
-        <div class="page page5">
+        <div class="page swiper-slide2 page5">
             <div class="animate img51 active"></div>
             <div class="animate img52"></div>
             <ul class="items animate">
@@ -267,9 +282,7 @@ header('Content-Type: text/html;charset=utf-8')
             <img class="img53 animate" src="img/5/chongxinfaqi.png" id="btnRestart"/>
             <script type="text/javascript">
                 $("#btnRestart").click(function () {
-                    $('.page2 .img1,.page1 .img2').removeClass('swing');
-                    $(".page2 .my-dishes").empty(), $('.page2 .dishes .dish').show(), mySwiper.slideTo(0);
-                    $(".con").css('transform', '');
+                    app.start();
                 })
             </script>
         </div>
