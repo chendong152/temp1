@@ -15,5 +15,5 @@ define('DB_DATABASE', 'test');
 $config = array(
     'appId'    => "wxb51b697eeeed61d7",
     'secret'   => "9e197a361b2e68ead1926dfd42b0a620",
-    'redirect' => "http://192.168.199.248/",
+    'redirect' => "http://reinchat.com:8002/",
 );
