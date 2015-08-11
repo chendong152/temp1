@@ -120,8 +120,16 @@ if (!isset($_SESSION['openid']))
                         if ($('.page2 .my-dishes .dish').length >= 3 || direction != 'down') return;
                         var t = e.target;
                         while (t != null && !$(t).hasClass('dish'))t = $(t).parent();
-                        $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).hide()).addClass('only swing').appendTo($('.page2 .my-dishes'));
-                        visibleQuestion();
+                        $(t).css({rotateY: '-360deg'}).transition({
+                            rotateY: '0deg', duration: 500, complete: function () {
+                                $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).transition({
+                                    scale: 0,
+                                    complete: function () {$(t).css({scale: 1}).hide()}
+                                }))
+                                    .addClass('only swing').appendTo($('.page2 .my-dishes'));
+                                visibleQuestion();
+                            }
+                        });
                     }
                 });
                 $('.page2 .my-dishes').swipe({
@@ -129,9 +137,13 @@ if (!isset($_SESSION['openid']))
                         if (direction != 'up') return;
                         var t = e.target;
                         while (t != null && !$(t).hasClass('dish'))t = $(t).parent();
-                        $(t).data('ori').show();
-                        $(t).remove();
-                        visibleQuestion();
+                        $(t).css({rotateY: '-360deg'}).transition({
+                            rotateY: '0deg', duration: 500, complete: function () {
+                                $(t).data('ori').show();
+                                $(t).remove();
+                                visibleQuestion();
+                            }
+                        });
                     }
                 });
                 $("#btnCheck").click(function () {
@@ -215,7 +227,7 @@ if (!isset($_SESSION['openid']))
             <div class="txt44 ">已找到1个同款</div>
             <ul class="items">
                 <li class="thumb">
-                    <img class="head_img" loadsrc="img/h.png"></img>
+                    <img class="head_img" loadsrc="img/h.png"/>
                     <dl>
                         <dt><em>则卷</em>与你不是同款吃货</dt>
                         <dd>他是<em>文艺级吃货</em></dd>

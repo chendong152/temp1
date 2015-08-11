@@ -82,7 +82,6 @@ App.prototype = {
             .parent().css({transform: 'translateX(' + -$(".con>.page").width() * i + "px)"})
             .find(".page:eq(" + i + ")").addClass('active');
         fn && fn();
-        //return $(".con").transition({x: -$(".con>.page").width() * (self.index() + 1)});
         return this;
     },
     start: function () {
