@@ -8,27 +8,24 @@ function App() {
 App.prototype = {
     _animates: {
         p1: function () {
-            $(".page1 .img5").css({x: -80}).transition({
-                x: 0, opacity: 1,
+            $(".page1 .img5").css({x: -180}).transition({
+                x: 0, opacity: 1,delay:1000,duration:500,
                 complete: function () {
                     $(".page1 .img3").css({scale: 0}).transition({
-                        scale: 1, opacity: 1,
+                        scale: 1, opacity: 1,delay:300,
                         complete: function () {
                             $(".page1 .img4").css({scale: 0, x: -50}).transition({
-                                scale: 1, x: 0, opacity: 1,
+                                scale: 1, x: 0, opacity: 1,delay:300,
                                 complete: function () {
                                     $('.page1 .img2,.page1 .img2-2').css({x: 100}).transition({
-                                        x: 0, opacity: 1,
+                                        x: 0, opacity: 1,delay:100,
                                         complete: function () {
                                             $(this).addClass('swing');
                                         }
                                     });
                                     setTimeout(function () {
-                                        $('.page1 .img6,.page1 .img7').css({
-                                            y: -$('.page1').height(),
-                                            opacity: 1
-                                        }).transition({y: 0});
-                                    }, 500);
+                                        $('.page1 .img6,.page1 .img7').css({y: -$('.page1').height(),opacity: 1,scale:0 }).transition({y: 0,scale:1,duration:500});
+                                    }, 100);
                                 }
                             });
                         }
