@@ -6,11 +6,11 @@
  * Time: 23:46
  * desc: 微信授权回调
  */
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/../config/config.php';
 
 $redirect = $config['redirect'];// $_SERVER['HTTP_REFERER'];
 session_start();
-$_SESSION['openid'] = 'ready';//$_GET['openid'];
+//$_SESSION['openid'] = 'ready';//$_GET['openid'];
 ?>
 <script type="text/javascript" src="../js/util.js"></script>
 <script type="text/javascript" src="../js/wxsns.js.js"></script>

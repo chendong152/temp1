@@ -9,7 +9,10 @@ session_start();
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/biz/dishConfig.php';
 
-header('Content-Type: text/html;charset=utf-8')
+header('Content-Type: text/html;charset=utf-8');
+session_start();
+if (!isset($_SESSION['openid']))
+    $_SESSION['openid'] = isset($_COOKIE['openid']) ? $_COOKIE['openid'] : null;
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,7 +34,8 @@ header('Content-Type: text/html;charset=utf-8')
 </head>
 <body>
 <script type="text/javascript">
-    wx=window.wx||{};wx.config= $.extend(wx.config,{appid:'<?echo $config['appId'];?>',secret:'<?echo $config['secret']?>'});
+    wx = window.wx || {};
+    wx.config = $.extend(wx.config, {appid: '<?echo $config['appId'];?>', secret: '<?echo $config['secret']?>'});
     if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://reinchat.com:8002/wx/cb.php');
     $(function () {
         document.title = $(document.body).width() + "," + $(document.body).height();
