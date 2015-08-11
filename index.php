@@ -31,48 +31,39 @@ header('Content-Type: text/html;charset=utf-8')
 </head>
 <body>
 <script type="text/javascript">
-    //onload = function () {alert("loaded")}
-    $.fn.extend({
-        showNext: function () {
-            var self = this;
-            while (self == null || !self.hasClass('page')) self = self.parent();
-            self && self.removeClass('active').next(".page").addClass('active');
-            return $(".con").css({transform: 'translate3d(' + -$(".con>.page").width() * (self.index() + 1) + "px,0,0)"});
-            //return $(".con").transition({x: -$(".con>.page").width() * (self.index() + 1)});
-        },
-    })
-    ;
     $(function () {
         document.title = $(document.body).width() + "," + $(document.body).height();
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
         //if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://192.168.2.2:8002/wx/cb.php');
     });
 </script>
-<div class="loader">加哉中</div>
+<div class="loader">
+    <div class="progress">拼命中</div>
+    <canvas class="progress"></canvas>
+</div>
 <div class="wrapper swiper-container2">
     <div class="con swiper-wrapper2">
         <div class="page swiper-slide2 active page1">
-            <img class="img1 animate" src="img/1/yun1.png"/>
-            <img class="img2 animate" src="img/1/shuishinidecai.png"/>
-            <img class="img2-2 animate" src="img/1/xuntongkuanchihuo.png"/>
-            <img class="img3 animate" src="img/1/cai.png"/>
-            <img class="img4 animate" src="img/1/nan.png"/>
-            <img class="img5 animate" src="img/1/nv.png"/>
-            <img class="img6 animate" src="img/1/start.png"/>
-            <img class="img7 animate" src="img/1/youxishuoming.png"/>
+            <img class="img1 " loadsrc="img/1/yun1.png"/>
+            <img class="img2 animate" loadsrc="img/1/shuishinidecai.png"/>
+            <img class="img2-2 animate" loadsrc="img/1/xuntongkuanchihuo.png"/>
+            <img class="img3 animate" loadsrc="img/1/cai.png"/>
+            <img class="img4 animate" loadsrc="img/1/nan.png"/>
+            <img class="img5 animate" loadsrc="img/1/nv.png"/>
+            <img class="img6 animate" loadsrc="img/1/start.png"/>
+            <img class="img7 animate" loadsrc="img/1/youxishuoming.png"/>
             <script type="text/javascript">
                 $(".page1 .img6").click(function () {
-                    $(this).showNext(), $(".swing").removeClass("swing");
+                    app.nextPage(), $(".swing").removeClass("swing");
                 })
             </script>
         </div>
 
-        <div class="page swiper-slide2 page2" style="background: none;">
-            <img src="img/3/third.png" style="width: 100%;height: 100%;top:0;left:0"/>
+        <div class="page swiper-slide2 page2">
             <script>
                 var dishList = <?echo json_encode($allDishes,1)?>;
             </script>
-            <img class="img21 animate" src="img/2/meishinameduo.png"/>
+            <img class="img21 animate" loadsrc="img/2/meishinameduo.png"/>
 
             <div class="dishes animate swiper-container">
                 <div class="swiper-wrapper origi">
@@ -80,7 +71,7 @@ header('Content-Type: text/html;charset=utf-8')
                     foreach ($allDishes as $index => $dish) {
                         ?>
                         <div class="dish swiper-slide" data-id="<? echo $index ?>">
-                            <div><img src="<? echo $dish->img ?>"/></div>
+                            <div><img loadsrc="<? echo $dish->img ?>"/></div>
                             <div><? echo $dish->name ?></div>
                         </div>
                     <? } ?>
@@ -96,27 +87,35 @@ header('Content-Type: text/html;charset=utf-8')
                     slidesPerView: 3, spaceBetween: 10,//freeMode:true,
                     direction: 'horizontal', loop: false,
                 });
-                $(".swiper-button-prev-m").click(function () {mySwiper.slidePrev()});
-                $(".swiper-button-next-m").click(function () {mySwiper.slideNext()});
+                $(".swiper-button-prev-m").click(function () {
+                    mySwiper.slidePrev()
+                });
+                $(".swiper-button-next-m").click(function () {
+                    mySwiper.slideNext()
+                });
             </script>
-            <img class="img23 animate" src="img/2/yun2.png"/>
-            <img class="img24 animate" src="img/2/wenhao.png"/>
+            <img class="img23 animate" loadsrc="img/2/yun2.png"/>
+            <img class="img24 animate" loadsrc="img/2/wenhao.png"/>
 
-            <div class="my-dishes animate">
+            <div class="txt24 animate">从上面拖三个最想吃的菜</div>
+
+            <div class="my-dishes">
             </div>
-            <img class="img25 animate" src="img/2/nv_2.png"/>
-            <img class="img26 animate" src="img/2/ok.png" id="btnCheck"/>
+            <img class="img25 animate" loadsrc="img/2/nv_2.png"/>
+            <img class="img26 animate" loadsrc="img/2/ok.png" id="btnCheck"/>
 
             <script type="text/javascript">
+                $("#btnCheck").hide();
                 function visibleQuestion() {
-                    $(".page2 .img24")[($('.page2 .my-dishes .dish').length > 0 ? 'hide' : 'show')]();
+                    $(".page2 .txt24")[($('.page2 .my-dishes .dish').length > 0 ? 'hide' : 'show')]();
+                    $('.page2 .img26')[($('.page2 .my-dishes .dish').length != 3 ? 'hide' : 'show')]().css({opacity: 0}).transition({opacity: 1});
                 }
                 $('.page2 .dishes').swipe({
                     swipe: function (e, direction, distance, duration, fingerCount, fingerData) {
                         if ($('.page2 .my-dishes .dish').length >= 3 || direction != 'down') return;
                         var t = e.target;
                         while (t != null && !$(t).hasClass('dish'))t = $(t).parent();
-                        $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).hide()).appendTo($('.page2 .my-dishes'));
+                        $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).hide()).addClass('only swing').appendTo($('.page2 .my-dishes'));
                         visibleQuestion();
                     }
                 });
@@ -133,9 +132,12 @@ header('Content-Type: text/html;charset=utf-8')
                 $("#btnCheck").click(function () {
                     var self = this;
                     wx.user.dishes = [];
-                    $('.page2 .my-dishes .dish').each(function () {wx.user.dishes.push($(this).data('id'));});
+                    $('.page2 .my-dishes .dish').each(function () {
+                        wx.user.dishes.push($(this).data('id'));
+                    });
                     if (wx.user.dishes.length != 3) return;
                     showMyDishes();
+                    app.nextPage();
                     $.ajax({
                         url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
                             //dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)],
@@ -144,7 +146,7 @@ header('Content-Type: text/html;charset=utf-8')
                         success: function (data) {
                             $("#lblMsg").text(data.msg[0]);
                             $("#lblMsg2").text(data.msg[1]);
-                            $(self).showNext();
+                            //app.nextPage();
                         },
                     });
                 })
@@ -153,7 +155,7 @@ header('Content-Type: text/html;charset=utf-8')
         </div>
 
         <div class="page swiper-slide2 page3">
-            <img class="img31 animate" src="img/3/jiangpai.png">
+            <img class="img31 " loadsrc="img/3/jiangpai.png">
 
             <div class="txt32 animate">
                 <div style="" onclick="$('.con').css('transform','translateX(0) ')">
@@ -161,8 +163,8 @@ header('Content-Type: text/html;charset=utf-8')
                 </div>
                 <div id="lblMsg2" style=""></div>
             </div>
-            <img class="img33 animate" src="img/3/nan_1.png"/>
-            <img class="img34 animate" src="img/3/yun3_1.png"/>
+            <img class="img33 animate" loadsrc="img/3/nan_1.png"/>
+            <img class="img34" loadsrc="img/3/yun3_1.png"/>
 
             <div class="my-dishes animate">
                 <script>
@@ -182,65 +184,69 @@ header('Content-Type: text/html;charset=utf-8')
                 </script>
                 <!--
                 <div class="dish">
-                    <div><img src="img/2/cai_simple.png"/></div>
+                    <div><img loadsrc="img/2/cai_simple.png"/></div>
                     <div class="label">小栽4在工在枯葳基本原理</div>
                 </div>
                 <div class="dish">
-                    <div><img src="img/2/cai_simple.png"/></div>
+                    <div><img loadsrc="img/2/cai_simple.png"/></div>
                     <div class="label">小栽4在工在枯葳基本原理</div>
                 </div> -->
             </div>
             <div class="img35 animate">
                 吃货的嘴是丰满的，但内心是骨感的，快快寻找身边的同款吃货，一起行走在去吃的路上吧
             </div>
-            <img class="img36 animate" src="img/3/nv_3.png"/>
-            <img class="img37 animate" src="img/3/quzhaotongkuan.png" id="btnGoResult"/>
+            <img class="img36 animate" loadsrc="img/3/nv_3.png"/>
+            <img class="img37 animate" loadsrc="img/3/quzhaotongkuan.png" id="btnGoResult"/>
             <script type="text/javascript">
-                $("#btnGoResult").click(function () {$(this).showNext()});
+                $("#btnGoResult").click(function () {
+                    app.nextPage();
+                });
             </script>
         </div>
 
         <div class="page swiper-slide2 page4">
-            <img class="img43 animate" src="img/h.png"/>
+            <img class="img43 " loadsrc="img/h.png"/>
 
-            <div class="txt44 animate">已找到1个同款</div>
-            <ul class="items animate">
+            <div class="txt44 ">已找到1个同款</div>
+            <ul class="items">
                 <li class="thumb">
-                    <img class="head_img" src="img/h.png"></img>
+                    <img class="head_img" loadsrc="img/h.png"></img>
                     <dl>
                         <dt><em>则卷</em>与你不是同款吃货</dt>
                         <dd>他是<em>文艺级吃货</em></dd>
                     </dl>
                 </li>
                 <li>
-                    <img src="img/h.png"/>
+                    <img loadsrc="img/h.png"/>
                     <dl>
                         <dt><em>则卷</em>与你不是同款吃货</dt>
                         <dd>他是<em>文艺级吃货</em></dd>
                     </dl>
                 </li>
                 <li>
-                    <img src="img/h.png"/>
+                    <img loadsrc="img/h.png"/>
                     <dl>
                         <dt><em>则卷</em>与你不是同款吃货</dt>
                         <dd>他是<em>文艺级吃货</em></dd>
                     </dl>
                 </li>
             </ul>
-            <img class="img44 animate" src="img/4/chongxinfaqi.png" id="btnPk">
-            <img class="img45 animate" src="/img/4/chakanpaihang.png">
+            <img class="img44 " loadsrc="img/4/chongxinfaqi.png" id="btnPk">
+            <img class="img45 " loadsrc="/img/4/chakanpaihang.png">
             <script type="text/javascript">
-                $("#btnPk").click(function () {$(this).showNext()});
+                $("#btnPk").click(function () {
+                    app.nextPage();
+                });
             </script>
         </div>
 
         <div class="page swiper-slide2 page5">
-            <div class="animate img51 active"></div>
-            <div class="animate img52"></div>
-            <ul class="items animate">
+            <div class=" img51 active"></div>
+            <div class=" img52"></div>
+            <ul class="items ">
                 <li class="item thumb">
                     <label class="index">1</label>
-                    <img class="head_img" src="img/h.png">
+                    <img class="head_img" loadsrc="img/h.png">
                     <dl>
                         <dt>则卷</dt>
                         <dd>与你的相似度100%</dd>
@@ -248,7 +254,7 @@ header('Content-Type: text/html;charset=utf-8')
                 </li>
                 <li class="item thumb">
                     <label class="index">1</label>
-                    <img class="head_img" src="img/h.png">
+                    <img class="head_img" loadsrc="img/h.png">
                     <dl>
                         <dt>则卷</dt>
                         <dd>与你的相似度100%</dd>
@@ -256,7 +262,7 @@ header('Content-Type: text/html;charset=utf-8')
                 </li>
                 <li class="item thumb">
                     <label class="index">1</label>
-                    <img class="head_img" src="img/h.png">
+                    <img class="head_img" loadsrc="img/h.png">
                     <dl>
                         <dt>则卷</dt>
                         <dd>与你的相似度100%</dd>
@@ -264,7 +270,7 @@ header('Content-Type: text/html;charset=utf-8')
                 </li>
                 <li class="item ">
                     <label class="index">1</label>
-                    <img class="head_img" src="img/h.png">
+                    <img class="head_img" loadsrc="img/h.png">
                     <dl>
                         <dt>则卷</dt>
                         <dd>与你的相似度100%</dd>
@@ -272,14 +278,14 @@ header('Content-Type: text/html;charset=utf-8')
                 </li>
                 <li class="item ">
                     <label class="index">1</label>
-                    <img class="head_img" src="img/h.png">
+                    <img class="head_img" loadsrc="img/h.png">
                     <dl>
                         <dt>则卷</dt>
                         <dd>与你的相似度100%</dd>
                     </dl>
                 </li>
             </ul>
-            <img class="img53 animate" src="img/5/chongxinfaqi.png" id="btnRestart"/>
+            <img class="img53 " loadsrc="img/5/chongxinfaqi.png" id="btnRestart"/>
             <script type="text/javascript">
                 $("#btnRestart").click(function () {
                     app.start();
