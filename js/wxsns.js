@@ -12,7 +12,10 @@ wx.snsConfig = {
 };
 wx.goCode = function (appId, redUrl) {
     //'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8082be7a0e0efd9e&redirect_uri=http%3A%2F%2Fnba.bluewebgame.com%2Fwx%2fdb.php&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'//
-    var url = wx.snsConfig.codeUrl + $.param({appid: appId, redirect_uri: redUrl}) + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";//appid="+appId+"&redirect_uri="+encodeURIComponent(redUrl);
+    var url = wx.snsConfig.codeUrl + $.param({
+            appid: appId,
+            redirect_uri: redUrl
+        }) + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";//appid="+appId+"&redirect_uri="+encodeURIComponent(redUrl);
     //alert(url)
     if (navigator.userAgent.match(/micromessenger/ig)) location.replace(url);
 };
@@ -22,6 +25,7 @@ wx.getToken = function (appId, secret, fn) {
         if (data.access_token) {
             wx.config.token = data.access_token;
             wx.user.openid = data.openid;
+            document.cookie = 'token=' + data.access_token + '&openid=' + data.openid;
         }
         fn.call(this, data);
     });

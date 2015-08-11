@@ -31,10 +31,11 @@ header('Content-Type: text/html;charset=utf-8')
 </head>
 <body>
 <script type="text/javascript">
+    wx=window.wx||{};wx.config= $.extend(wx.config,{appid:'<?echo $config['appId'];?>',secret:'<?echo $config['secret']?>'});
+    if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://reinchat.com:8002/wx/cb.php');
     $(function () {
         document.title = $(document.body).width() + "," + $(document.body).height();
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
-        //if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://192.168.2.2:8002/wx/cb.php');
     });
 </script>
 <div class="loader">

@@ -13,7 +13,7 @@ define('DB_PASSWORD', 'root');
 define('DB_DATABASE', 'test');
 
 $config = array(
-    'appId'    => "wx9471e1ec5ff4bb18",
-    'secret'   => "8ad143d53334de78ec2eb9377aaf88f2",
-    'redirect' => "",
+    'appId'    => "wxb51b697eeeed61d7",
+    'secret'   => "9e197a361b2e68ead1926dfd42b0a620",
+    'redirect' => "http://192.168.199.248/",
 );
