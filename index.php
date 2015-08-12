@@ -10,9 +10,27 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/biz/dishConfig.php';
 
 header('Content-Type: text/html;charset=utf-8');
+header('Cache-Control: no-cache');
 
 if (!isset($_SESSION['openid']))
     $_SESSION['openid'] = isset($_COOKIE['openid']) ? $_COOKIE['openid'] : null;
+
+//echo  $_SERVER['HTTP_USER_AGENT'];
+$isWx = preg_match('/micromessenger/i', $_SERVER['HTTP_USER_AGENT']);
+if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+    setcookie('backurl', $_SERVER['REQUEST_URI']);
+    if ($isWx) {
+        header("Location: https://open.weixin.qq.com/connect/oauth2/authorize?appid={$config['appId']}&redirect_uri={$config['redirect']}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect");
+        exit;
+    }
+}
+
+$user = !$isWx ? json_decode('{"openid":" OPENID","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","img":"http:\/\/cc.om"}') : null;
+if (isset($_SESSION['user']))
+    $user = json_decode($_SESSION['user']);
+
+if (!$user)
+    exit('no user');
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,11 +52,26 @@ if (!isset($_SESSION['openid']))
 </head>
 <body>
 <script type="text/javascript">
+    onerror = function (m) {
+        alert(m);
+    }
+</script>
+<script type="text/javascript">
     wx = window.wx || {};
-    wx.config = $.extend(wx.config, {appid: '<?echo $config['appId'];?>', secret: '<?echo $config['secret']?>'});
-    //if (<?echo isset($_SESSION['openid'])?'false':'true'?>) wx.goCode('<?echo $config['appId']?>', 'http://reinchat.com:8002/wx/cb.php');
+    try {
+        wx.user =<?echo json_encode($user)?>;
+    } catch (ex) {
+        alert(ex)
+    }
+    //$("script").each(function(){alert($(this).text())})
+    wx.config = $.extend(wx.config, {
+        appid: '<?echo $config['appId'];?>',
+        secret: '<?echo $config['secret']?>',
+        openid: '<?echo $_SESSION['openid']?>'
+    });
     $(function () {
         document.title = $(document.body).width() + "," + $(document.body).height();
+        $('.my-head').attr('src', wx.user.headimgurl);
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
     });
 </script>
@@ -124,7 +157,9 @@ if (!isset($_SESSION['openid']))
                             rotateY: '0deg', duration: 500, complete: function () {
                                 $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).transition({
                                     scale: 0,
-                                    complete: function () {$(t).css({scale: 1}).hide()}
+                                    complete: function () {
+                                        $(t).css({scale: 1}).hide()
+                                    }
                                 }))
                                     .addClass('only swing').appendTo($('.page2 .my-dishes'));
                                 visibleQuestion();
@@ -222,7 +257,7 @@ if (!isset($_SESSION['openid']))
         </div>
 
         <div class="page swiper-slide2 page4">
-            <img class="img43 " loadsrc="img/h.png"/>
+            <img class="img43 my-head" load="img/h.png"/>
 
             <div class="txt44 ">已找到1个同款</div>
             <ul class="items">

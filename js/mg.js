@@ -93,7 +93,7 @@ App.prototype = {
     init: function () {
         var self = this;
         if (!self.__inited) {
-            this.imgCount = $("img").load(function () {
+            this.imgCount = $("img[loadsrc]").load(function () {
                 var p = self.imgCount == 0 ? 0 : ++self.loadedCount / self.imgCount;
                 $(".loader .progress").text(parseInt(p * 100) + '%');
                 if (p == 1) {
@@ -105,7 +105,7 @@ App.prototype = {
                     self.start();
                 }
             }).length;
-            $("img").each(function () {
+            $("img[loadsrc]").each(function () {
                 $(this).attr('src', $(this).attr('loadsrc'))
             });
             self.__inited = true;

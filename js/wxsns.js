@@ -6,7 +6,7 @@
 wx = window.wx || {}, wx.config = wx.config || {}, wx.user = wx.user || {};
 wx.snsConfig = {
     codeUrl: 'https://open.weixin.qq.com/connect/oauth2/authorize?',
-    tokenUrl: 'https://api.weixin.qq.com/sns/oauth2/access_token?&code=CODE&grant_type=authorization_code',
+    tokenUrl: 'https://api.weixin.qq.com/sns/oauth2/access_token',//?&code=CODE&grant_type=authorization_code',
     refreshUrl: 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN',
     userUrl: 'https://api.weixin.qq.com/sns/userinfo?lang=zh_CN'
 };
@@ -16,18 +16,29 @@ wx.goCode = function (appId, redUrl) {
             appid: appId,
             redirect_uri: redUrl
         }) + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";//appid="+appId+"&redirect_uri="+encodeURIComponent(redUrl);
-    //alert(url)
+    alert(url)
     if (navigator.userAgent.match(/micromessenger/ig)) location.replace(url);
 };
-wx.getToken = function (appId, secret, fn) {
-    var url = wx.snsConfig.tokenUrl + "&" + $.param({code: getParam("code"), appid: appId, secret: secret});
-    $.getJSON(url, function (data) {
-        if (data.access_token) {
-            wx.config.token = data.access_token;
-            wx.user.openid = data.openid;
-            document.cookie = 'token=' + data.access_token + '&openid=' + data.openid;
+wx.getToken = function (appId, secret, code, fn) {
+    var d = {appid: appId, secret: secret, code: code, grant_type: 'authorization_code'};
+    var url = wx.snsConfig.tokenUrl + "?" + $.param(d);
+    document.writeln("get from " + url);
+    location.replace(url);return;
+    $.ajax({
+        url: url,
+        type:"post",
+        complete: function (d1, d2, data) {
+            document.writeln(JSON.stringify(d1));
+            document.writeln(JSON.stringify(d2));
+            document.writeln(JSON.stringify(data));
+            //alert("get finished:" + JSON.stringify(data));//一个code只能使用一次
+            if (data.access_token) {
+                wx.config.token = data.access_token;
+                wx.user.openid = data.openid;
+                document.cookie = 'token=' + data.access_token + '&openid=' + data.openid;
+            }
+            fn.call(this, data);
         }
-        fn.call(this, data);
     });
 };
 wx.getUser = function (fn) {
