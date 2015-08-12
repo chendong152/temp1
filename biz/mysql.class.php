@@ -246,17 +246,61 @@ class Mysql {
                 break;
         }
         $this->sql = $sql;
+        /*
         // 缓存判断 [暂时只支持缓存查询]
         if ($this->_operate == 'SELECT' && $this->cache_check()) {
             $return = $this->_result;
             // 清理变量池并返回
             if ($this->free()) return $return;
         }
+
         // 连接判断
         if (!$this->_dbc_handle) $this->connect();
         // 开始执行SQL
         $this->trace('public::query::begin[' . $this->_operate . ']');
         $this->_query_handle = mysql_query($sql, $this->_dbc_handle);
+        if (!$this->_query_handle) {
+            $this->alert('SQL run error.');
+        }
+        $this->trace('public::query::finish[' . $this->_operate . ']');
+        if ($this->_operate == 'SELECT') {
+            if (mysql_num_rows($this->_query_handle) > 0) {
+                while ($one_row = mysql_fetch_assoc($this->_query_handle)) {
+                    $this->_result[] = $one_row;
+                }
+                mysql_data_seek($this->_query_handle, 0);
+            } else {
+                $this->_result = null;
+            }
+            // 写缓存
+            if ($this->_need_cache) $this->cache_write();
+            $return = $this->_result;
+            // 清理变量池并返回
+            if ($this->free()) return $return;
+        } else {
+            $return = mysql_affected_rows($this->_dbc_handle);
+            // 清理变量池并返回
+            if ($this->free()) return $return;
+        }*/
+        return $this->exec();
+    }
+
+    public function  exec($sql) {
+        if ($this->_operate != 'SELECT') $this->_operate = 'SELECT';
+        if (!empty($sql)) $this->sql = $sql;
+
+        // 缓存判断 [暂时只支持缓存查询]
+        if ($this->_operate == 'SELECT' && $this->cache_check()) {
+            $return = $this->_result;
+            // 清理变量池并返回
+            if ($this->free()) return $return;
+        }
+
+        // 连接判断
+        if (!$this->_dbc_handle) $this->connect();
+        // 开始执行SQL
+        $this->trace('public::query::begin[' . $this->_operate . ']');
+        $this->_query_handle = mysql_query($this->sql, $this->_dbc_handle);
         if (!$this->_query_handle) {
             $this->alert('SQL run error.');
         }
@@ -356,7 +400,9 @@ class Mysql {
                 }
             }
         }
-        return substr($sql_data, 0, -2);
+
+        return preg_replace('/(,\s*)*$/i', '', @$sql_data);
+        //return substr($sql_data, 0, -2);
     }
     // ]>
     // 缓存检测

@@ -25,9 +25,11 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":" OPENID","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","img":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"openid6","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
+else
+    $_SESSION['user'] = json_encode($user);//为了在非微信下测试
 
 if (!$user)
     exit('no user');
@@ -259,12 +261,13 @@ if (!$user)
         <div class="page swiper-slide2 page4">
             <img class="img43 my-head" load="img/h.png"/>
 
-            <div class="txt44 ">已找到1个同款</div>
+            <div class="txt44 ">已找到<span class="count">1</span>个同款</div>
             <ul class="items">
-                <li class="thumb">
+                <!--li class="thumb">
                     <img class="head_img" loadsrc="img/h.png"/>
                     <dl>
-                        <dt><em>则卷</em>与你不是同款吃货</dt>
+                        <dt><em class="other_alias">卷</em>与<span class="bench">你</span><span class="verb">不是</span>同款吃货
+                        </dt>
                         <dd>他是<em>文艺级吃货</em></dd>
                     </dl>
                 </li>
@@ -281,13 +284,25 @@ if (!$user)
                         <dt><em>则卷</em>与你不是同款吃货</dt>
                         <dd>他是<em>文艺级吃货</em></dd>
                     </dl>
-                </li>
+                </li-->
             </ul>
-            <img class="img44 " loadsrc="img/4/chongxinfaqi.png" id="btnPk">
-            <img class="img45 " loadsrc="/img/4/chakanpaihang.png">
+            <img class="img44 " loadsrc="img/4/chongxinfaqi.png" id="btnRestart1">
+            <img class="img45 " loadsrc="/img/4/chakanpaihang.png" id="btnPk">
             <script type="text/javascript">
+                $("#btnRestart1").click(function () {
+                    app.start();
+                });
                 $("#btnPk").click(function () {
-                    app.nextPage();
+                    $.getJSON('biz/ajax.php?action=pk', {from: getParam('from')}, function (data) {
+                        var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
+                        var p = $(".page5 .items").empty();
+                        for (var i in data.current || []) {
+                            var item = data.current[i];
+                            item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
+                            p.append($(replace(li, item)));
+                        }
+                        app.nextPage();
+                    });
                 });
             </script>
         </div>

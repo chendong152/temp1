@@ -9,22 +9,26 @@ App.prototype = {
     _animates: {
         p1: function () {
             $(".page1 .img5").css({x: -180}).transition({
-                x: 0, opacity: 1,delay:1000,duration:500,
+                x: 0, opacity: 1, delay: 1000, duration: 500,
                 complete: function () {
                     $(".page1 .img3").css({scale: 0}).transition({
-                        scale: 1, opacity: 1,delay:300,
+                        scale: 1, opacity: 1, delay: 300,
                         complete: function () {
                             $(".page1 .img4").css({scale: 0, x: -50}).transition({
-                                scale: 1, x: 0, opacity: 1,delay:300,
+                                scale: 1, x: 0, opacity: 1, delay: 300,
                                 complete: function () {
                                     $('.page1 .img2,.page1 .img2-2').css({x: 100}).transition({
-                                        x: 0, opacity: 1,delay:100,
+                                        x: 0, opacity: 1, delay: 100,
                                         complete: function () {
                                             $(this).addClass('swing');
                                         }
                                     });
                                     setTimeout(function () {
-                                        $('.page1 .img6,.page1 .img7').css({y: -$('.page1').height(),opacity: 1,scale:0 }).transition({y: 0,scale:1,duration:500});
+                                        $('.page1 .img6,.page1 .img7').css({
+                                            y: -$('.page1').height(),
+                                            opacity: 1,
+                                            scale: 0
+                                        }).transition({y: 0, scale: 1, duration: 500});
                                     }, 100);
                                 }
                             });
@@ -57,7 +61,7 @@ App.prototype = {
             $('.page3 .img36').css({x: 200, opacity: 1}).transition({
                 x: 0, complete: function () {
                     $('.page3 .my-dishes').css({}).transition({
-                        opacity: 1,delay: 800, complete: function () {
+                        opacity: 1, delay: 800, complete: function () {
                             $('.page3 .txt32').css({scale: 0}).transition({
                                 scale: 1, opacity: 1, delay: 800, complete: function () {
                                     $('.page3 .img35').css({scale: 0}).transition({
@@ -82,7 +86,7 @@ App.prototype = {
             .parent().css({transform: 'translateX(' + -$(".con>.page").width() * i + "px)"})
             .find(".page:eq(" + i + ")").addClass('active');
         fn && fn();
-        return this;
+        return this.onshow ? this.onshow.call(this, i) && this : this;
     },
     start: function () {
         $('.page > .animate').css({opacity: 0});
@@ -114,6 +118,23 @@ App.prototype = {
 }
 ;
 var app = new App();
+app.onshow = function (i) {
+    if (i != 3) return this;
+    $.getJSON('/biz/ajax.php?action=similar', {from: getParam('from')}, function (data) {
+        var count = 0;
+        $('.page4 .items').empty();
+        for (var i in data) {
+            var item = data[i];
+            item['thumb'] = item.similar == 100 ? ++count && 'thumb' : '';
+            item['comp'] = item.similar == 100 ? '' : '不';
+            item['bench'] = item.nickname == wx.user.nickname ? '你' : item.nickname;
+            var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
+            $('.page4 .items').append($(replace(li, item)));
+        }
+        $('.page4 .txt44 .count').text(count);
+    });
+    return this;
+}
 $(function () {
     app.init();
 });
