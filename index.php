@@ -8,6 +8,7 @@
 session_start();
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/biz/dishConfig.php';
+require_once __DIR__ . '/wx/h.php';
 
 header('Content-Type: text/html;charset=utf-8');
 header('Cache-Control: no-cache');
@@ -51,6 +52,7 @@ if (!$user)
     <script src="js/swiper3.1.0.jquery.min.js"></script>
     <script src="js/jquery.touchSwipe.min.js"></script>
     <script src="js/mg.js"></script>
+    <script src="wx/sdk.js"></script>
 </head>
 <body>
 <script type="text/javascript">
@@ -191,16 +193,14 @@ if (!$user)
                     });
                     if (wx.user.dishes.length != 3) return;
                     showMyDishes();
-                    app.nextPage();
                     $.ajax({
                         url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
                             //dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)],
                             from: getParam('from')
                         }, wx.user),
                         success: function (data) {
-                            $("#lblMsg").text(data.msg[0]);
-                            $("#lblMsg2").text(data.msg[1]);
-                            //app.nextPage();
+                            $("#lblMsg").text(data.msg[0]), $("#lblMsg2").text(data.msg[1]), app.recId = data.id, app.done = true;
+                            app.nextPage();
                         },
                     });
                 })
@@ -361,5 +361,50 @@ if (!$user)
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    <?php
+        $jsWx=array(
+            'jsapi_ticket'=>wx_get_jsapi_ticket(),
+            'timestamp'=>time(),
+            'url'=>$_SERVER['REQUEST_URI'],
+            'nonceStr'=>'fkuwx'.time(),
+        );
+        ksort($jsWx);
+        $input=implode('&',array_map(function($k,$v){return "$k=$v";},array_keys($jsWx),array_values($jsWx)));
+        $jsWx['signature']=strtolower(sha1(strtolower($input)));
+    ?>
+    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host;
+    wx.config({
+        debug: false,
+        appId: "<?echo $config['appId']?>",
+        timestamp: <?echo $jsWx['timestamp']?>,
+        nonceStr: '<?echo $jsWx['nonceStr']?>',
+        signature: '<?echo $jsWx['signature']?>',
+        jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
+    });
+    var ts = {
+        yet: {icon: wx.user.headimgurl, title: wx.user.nickname + '是文艺级吃货，快看看你是否与我是同款吃货'},
+        had: {icon: host + '/img/fenxiang.png', title: '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'}
+    };
+    var t = app.done ? ts.had : ts.yet;
+    t.icon = app.done ? wx.user.headimgurl : t.icon;
+    t.url = host + "?from=" + (app.id ? app.id : -1) + "&from_openid=" + wx.user.openid;
+    wx.ready(function () {
+        // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareTimeline({
+            title: t.title, // 分享标题
+            link: t.url,
+            imgUrl: t.icon" // 分享图标
+        });
+        // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareAppMessage({
+            title: t.title, // 分享标题
+            desc: "", // 分享描述
+            link: t.url,
+            imgUrl: t.icon, // 分享图标
+            type: 'link', // 分享类型,music、video或link，不填默认为link
+        });
+    });
+</script>
 </body>
 </html>

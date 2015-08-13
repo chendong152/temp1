@@ -10,18 +10,19 @@
 include_once __DIR__ . '/../config/config.php';
 error_reporting(~E_WARNING & ~E_NOTICE);
 
-class Mysql {
+class Mysql
+{
     // 默认配置
     public static $_config_default = array
     (
-        'debug'    => false,
-        'host'     => 'localhost:3306',
+        'debug' => false,
+        'host' => 'localhost:3306',
         'username' => 'root',
         'password' => 'root',
         'database' => 'test',
-        'prefix'   => 'savor_',
-        'charset'  => 'utf-8',
-        'cached'   => 'file://{root}/query_cache/',
+        'prefix' => 'savor_',
+        'charset' => 'utf-8',
+        'cached' => 'file://{root}/query_cache/',
     );
 
     public $CACHE_HASH_SALT = 'sql.cache.uuland.org';
@@ -57,16 +58,19 @@ class Mysql {
     private $_trace = array();
 
     // 获取实例
-    public static function getInstance() {
+    public static function getInstance()
+    {
         return new self();
     }
 
     // 私有化构造函数，禁止外部实例化
-    private function __construct() {
+    private function __construct()
+    {
     }
 
     // 卸载实例时，自动释放资源，关闭连接
-    public function __destruct() {
+    public function __destruct()
+    {
         // 释放资源
         $this->free();
         // 关闭连接
@@ -74,7 +78,8 @@ class Mysql {
     }
 
     // 载入配置
-    public function config($config) {
+    public function config($config)
+    {
         $this->trace('public::config::load');
         $this->_config = $config;
         // 执行初始化
@@ -82,7 +87,8 @@ class Mysql {
     }
 
     // 初始化
-    private function init() {
+    private function init()
+    {
         $this->trace('private::config::init_default');
         // 配置分析
         foreach ($this->_config as $key => $val) {
@@ -108,7 +114,8 @@ class Mysql {
     }
 
     // 连接至数据库
-    private function connect() {
+    private function connect()
+    {
         $this->trace('public::server::connect');
         // 连接服务器
         $this->_dbc_handle = mysql_connect(
@@ -141,7 +148,8 @@ class Mysql {
     }
 
     // 释放数据查询
-    private function free() {
+    private function free()
+    {
         $this->trace('public::query::free');
         if (method_exists($this, '_query_handle') && $this->_query_handle && $this->_operate == 'SELECT') {
             mysql_free_result($this->_query_handle);
@@ -160,7 +168,8 @@ class Mysql {
     }
 
     // 关闭数据库连接
-    private function close() {
+    private function close()
+    {
         if ($this->_dbc_handle) {
             $this->trace('public::server::close');
             mysql_close($this->_dbc_handle);
@@ -169,62 +178,72 @@ class Mysql {
     }
     // <![数据库操作][
     // 增改删查
-    public function select($column) {
+    public function select($column)
+    {
         $this->_operate = 'SELECT';
         $this->_column = $column;
         return $this;
     }
 
-    public function update($column) {
+    public function update($column)
+    {
         $this->_operate = 'UPDATE';
         $this->_column = $column;
         return $this;
     }
 
-    public function insert($column) {
+    public function insert($column)
+    {
         $this->_operate = 'INSERT';
         $this->_column = $column;
         return $this;
     }
 
-    public function delete($column) {
+    public function delete($column)
+    {
         $this->_operate = 'DELETE';
         $this->_column = $column;
         return $this;
     }
 
     // 条件
-    public function where($where) {
+    public function where($where)
+    {
         $this->_where[] = $where;
         return $this;
     }
 
     // 排序
-    public function order($order) {
+    public function order($order)
+    {
         $this->_order[] = $order;
         return $this;
     }
 
     // 限制返回结果数
-    public function limit($limit) {
+    public function limit($limit)
+    {
         $this->_limit = $limit;
         return $this;
     }
 
     // 数据存储
-    public function data($data) {
+    public function data($data)
+    {
         $this->_data[] = $data;
         return $this;
     }
 
     // 缓存设置
-    public function cache($cache) {
+    public function cache($cache)
+    {
         $this->_cache = $cache;
         return $this;
     }
 
     // 开始执行操作
-    public function done() {
+    public function done()
+    {
         $this->trace('public::query::init');
         // 数据表
         $column = $this->_prefix . $this->_column;
@@ -285,7 +304,8 @@ class Mysql {
         return $this->exec();
     }
 
-    public function  exec($sql) {
+    public function  exec($sql = null)
+    {
         if ($this->_operate != 'SELECT') $this->_operate = 'SELECT';
         if (!empty($sql)) $this->sql = $sql;
 
@@ -327,7 +347,8 @@ class Mysql {
     }
 
     // 返回结果限制
-    private function pack_limit() {
+    private function pack_limit()
+    {
         if ($this->_limit == '') return '';
         if (is_numeric($this->_limit)) {
             return ' LIMIT 0,' . $this->_limit;
@@ -337,7 +358,8 @@ class Mysql {
     }
 
     // 条件整合
-    private function pack_where() {
+    private function pack_where()
+    {
         if (!$this->_where) return '';
         $sql_where = ' WHERE ';
         foreach ($this->_where as $where) {
@@ -361,7 +383,8 @@ class Mysql {
     }
 
     // 排序整合
-    private function pack_order() {
+    private function pack_order()
+    {
         if (!$this->_order) return '';
         $sql_order = ' ORDER BY ';
         foreach ($this->_order as $order) {
@@ -380,7 +403,8 @@ class Mysql {
     }
 
     // 数据整合
-    private function pack_data() {
+    private function pack_data()
+    {
         if (!$this->_data) return '';
         $sql_data = ' SET ';
         foreach ($this->_data as $data) {
@@ -406,7 +430,8 @@ class Mysql {
     }
     // ]>
     // 缓存检测
-    private function cache_check() {
+    private function cache_check()
+    {
         $this->trace('private::cache::check');
         if ($this->_cache == '') return false;
         $this->_cache_key = md5($this->sql . '@' . $this->CACHE_HASH_SALT);
@@ -429,20 +454,23 @@ class Mysql {
     }
 
     // 获取时间
-    private function cache_time() {
+    private function cache_time()
+    {
         $handle = 'cache_handle_' . $this->_cached . '_time';
         return $this->$handle($this->_cache_key);
     }
 
     // 读缓存
-    private function cache_read() {
+    private function cache_read()
+    {
         $this->trace('private::cache::read');
         $handle = 'cache_handle_' . $this->_cached . '_value';
         return $this->$handle($this->_cache_key);
     }
 
     // 写缓存
-    private function cache_write() {
+    private function cache_write()
+    {
         $this->trace('private::cache::write');
         $handle = 'cache_handle_' . $this->_cached . '_write';
         $this->$handle($this->_cache_key, $this->_result);
@@ -450,7 +478,8 @@ class Mysql {
     }
     // <![缓存方式][
     // 文件缓存
-    private function cache_handle_file_time($key) {
+    private function cache_handle_file_time($key)
+    {
         if (is_file($this->_fc_path . $key . '.sql')) {
             return filemtime($this->_fc_path . $key . '.sql');
         } else {
@@ -458,7 +487,8 @@ class Mysql {
         }
     }
 
-    private function cache_handle_file_value($key) {
+    private function cache_handle_file_value($key)
+    {
         if (is_file($this->_fc_path . $key . '.sql')) {
             return unserialize(file_get_contents($this->_fc_path . $key . '.sql'));
         } else {
@@ -466,13 +496,15 @@ class Mysql {
         }
     }
 
-    private function cache_handle_file_write($key, $val) {
+    private function cache_handle_file_write($key, $val)
+    {
         file_put_contents($this->_fc_path . $key . '.sql', serialize($val));
         return true;
     }
 
     // memcache 缓存 [这里做的不怎么好，不过平常也用不到memcache的 ^_^]
-    private function cache_handle_memcache_time($key) {
+    private function cache_handle_memcache_time($key)
+    {
         $mec = new Memcache();
         $mec->connect($this->_mc_server);
         $val = $mec->get($this->_cache_key . '_time');
@@ -484,7 +516,8 @@ class Mysql {
         }
     }
 
-    private function cache_handle_memcache_value($key) {
+    private function cache_handle_memcache_value($key)
+    {
         $mec = new Memcache();
         $mec->connect($this->_mc_server);
         $val = $mec->get($this->_cache_key . '_value');
@@ -496,7 +529,8 @@ class Mysql {
         }
     }
 
-    private function cache_handle_memcache_write($key, $val) {
+    private function cache_handle_memcache_write($key, $val)
+    {
         $mec = new Memcache();
         $mec->connect($this->_mc_server);
         $mec->set($this->_cache_key . '_time', time());
@@ -509,7 +543,8 @@ class Mysql {
     // 功能后续添加
     // ]>
     // 调试信息
-    private function alert($message) {
+    private function alert($message)
+    {
         if (!$this->_debug) return;
         echo '<div style="border:2px solid #000;margin:10px;padding:10px;">';
         echo $message;
@@ -520,13 +555,15 @@ class Mysql {
     }
 
     // 记录调试
-    private function trace($message) {
+    private function trace($message)
+    {
         if (!$this->_debug) return;
         $this->_trace[] = array('timer' => microtime(), 'mmusage' => memory_get_usage(), 'message' => $message);
     }
 
     // 输出调试
-    public function trace_output() {
+    public function trace_output()
+    {
         if (!$this->_debug) return;
         echo '<div style="border:2px solid #000;margin:10px;padding:10px;">';
         echo '<ul>';

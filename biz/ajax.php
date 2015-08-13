@@ -11,12 +11,14 @@ require_once 'dish.php';
 require_once 'dishConfig.php';
 require_once 'user.php';
 require_once __DIR__ . '/mysql.class.php';
+include_once __DIR__ . '/../wx/h.php';
 
 session_start();
 echo json_encode(!empty($_GET['action']) ? $_GET['action']() : json_encode(array('code' => 404, 'msg' => '当前action不存在')));
 exit;
 
-function check() {
+function check()
+{
     global $allDishes, $config, $db;
     $user = json_decode($_SESSION['user']);
     if (!$user) return array('msg' => 'no user');
@@ -33,8 +35,8 @@ function check() {
 
     //记录结果到库:用户基本信息、选择的3个菜品、最高分和最低分键值对、结果鉴定语、时间 (重玩时更新用户信息，新增游戏数据)
     $data = array(
-        'nickname'   => $user->nickname,
-        'openid'     => $user->openid,
+        'nickname' => $user->nickname,
+        'openid' => $user->openid,
         'headimgurl' => $user->headimgurl,
     );
     $exists = $db->select("user")->where("openid='{$data['openid']}'")->limit(1)->done();
@@ -54,14 +56,14 @@ function check() {
     if ($exists)
         return array('msg' => array('本期已玩过了'));//一期只能玩一次
     $data = array(
-        'openid'        => $data['openid'],
-        'dishes'        => implode(',', $ds),
-        'style'         => implode(',', array_values($merge->toArray())),
-        'score_high'    => key($scores['high']) . ':' . current($scores['high']),
-        'score_low'     => key($scores['low']) . ':' . current($scores['low']),
-        'result_kind'   => $texts[0],
+        'openid' => $data['openid'],
+        'dishes' => implode(',', $ds),
+        'style' => implode(',', array_values($merge->toArray())),
+        'score_high' => key($scores['high']) . ':' . current($scores['high']),
+        'score_low' => key($scores['low']) . ':' . current($scores['low']),
+        'result_kind' => $texts[0],
         'result_detail' => $texts[1],
-        'from_id'       => $from,
+        'from_id' => $from,
     );
     //相似度
     if (!empty($data['from_id'])) {
@@ -71,14 +73,16 @@ function check() {
         $data['from_openid'] = $rec['openid'];
     }
     $db->insert("user_record")->data($data)->done();//保存
-
-    return array('code' => 0, 'score' => 1, 'msg' => $texts);
+    $id = $db->exec("SELECT LAST_INSERT_ID() as id");
+    if ($id) $id = $id[0];
+    return array('code' => 0, 'score' => 1, 'msg' => $texts, 'id' => $id['id']);
 }
 
-function t() {
+function t()
+{
     global $db;
-    $sql = "select * from savor_user_record r,savor_user u where r.openid=u.openid";
-    print_r($db->exec($sql));
+    echo wx_get_token();
+    echo wx_get_jsapi_ticket();
     return '';
 }
 
@@ -87,7 +91,8 @@ function t() {
  * @return array
  *
  */
-function similar() {
+function similar()
+{
     global $db;
     $tn = 'user_record';
     $current = json_decode($_SESSION['user']);//当前玩家
@@ -119,7 +124,8 @@ function similar() {
     //否则，前端显示“我是同味吃货吗”，点击就提示分享
 }
 
-function pk() {
+function pk()
+{
     global $db;
     $user = json_decode($_SESSION['user']);
     $from = $_REQUEST['from'];
