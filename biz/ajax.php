@@ -68,9 +68,11 @@ function check()
     //相似度
     if (!empty($data['from_id'])) {
         $rec = $db->select("user_record")->limit(1)->where("id=" . $data['from_id'])->done();//获取推荐人的游戏信息
-        $rec = $rec[0];
-        $data['similar'] = User::match(get_dish($rec['dishes']), get_dish($data['dishes']));
-        $data['from_openid'] = $rec['openid'];
+        if($rec) {
+            $rec = $rec[0];
+            $data['similar'] = User::match(get_dish($rec['dishes']), get_dish($data['dishes']));
+            $data['from_openid'] = $rec['openid'];
+        }
     }
     $db->insert("user_record")->data($data)->done();//保存
     $id = $db->exec("SELECT LAST_INSERT_ID() as id");

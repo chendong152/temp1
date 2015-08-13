@@ -9,7 +9,7 @@ App.prototype = {
     _animates: {
         p1: function () {
             $(".page1 .img5").css({x: -180}).transition({
-                x: 0, opacity: 1, delay: 1000, duration: 500,
+                x: 0, opacity: 1, delay: 100, duration: 500,
                 complete: function () {
                     $(".page1 .img3").css({scale: 0}).transition({
                         scale: 1, opacity: 1, delay: 300,
@@ -17,19 +17,24 @@ App.prototype = {
                             $(".page1 .img4").css({scale: 0, x: -50}).transition({
                                 scale: 1, x: 0, opacity: 1, delay: 300,
                                 complete: function () {
-                                    $('.page1 .img2,.page1 .img2-2').css({x: 100}).transition({
+                                    $(".page1 .img2-2").css({x: 100}).transition({
                                         x: 0, opacity: 1, delay: 100,
                                         complete: function () {
-                                            $(this).addClass('swing');
+                                            $(this).css({animation: 'infinite tada 5s ease'});
                                         }
                                     });
-                                    setTimeout(function () {
-                                        $('.page1 .img6,.page1 .img7').css({
-                                            y: -$('.page1').height(),
-                                            opacity: 1,
-                                            scale: 0
-                                        }).transition({y: 0, scale: 1, duration: 500});
-                                    }, 100);
+                                    $('.page1 .img2').css({x: 100}).transition({
+                                        x: 0, opacity: 1, delay: 100,
+                                        complete: function () {
+                                            $(this).css({animation: 'infinite tada 5s ease'});
+                                            setTimeout(function () {
+                                                $('.page1 .img6,.page1 .img7').css({
+                                                    opacity: 1,
+                                                    animation: 'bounceInDown 800ms ease-in'
+                                                })
+                                            }, 1000);
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -47,8 +52,11 @@ App.prototype = {
                             $(".page2 .img21,.page2 .img23,.page2 .img24").css({scale: 0, opacity: 0}).transition({
                                 scale: 1, opacity: 1,
                                 complete: function () {
-                                    $('.page2 .img21').addClass('swing');
-                                    $(".page2 .img24").hide(), $(".page2 .txt24").show().css({opacity: 0}).transition({opacity: 1});
+                                    if (!this.d1) {
+                                        this.d1 = true;
+                                        $('.page2 .img21').css({animation: 'infinite tada2 5s ease'});
+                                        $(".page2 .img24").hide(), $(".page2 .txt24").show().css({opacity: 0}).transition({opacity: 1});
+                                    }
                                 }
                             });
                         }
@@ -61,11 +69,11 @@ App.prototype = {
             $('.page3 .img36').css({x: 200, opacity: 1}).transition({
                 x: 0, complete: function () {
                     $('.page3 .my-dishes').css({}).transition({
-                        opacity: 1, delay: 800, complete: function () {
+                        opacity: 1, delay: 500, complete: function () {
                             $('.page3 .txt32').css({scale: 0}).transition({
-                                scale: 1, opacity: 1, delay: 800, complete: function () {
+                                scale: 1, opacity: 1, delay: 500, complete: function () {
                                     $('.page3 .img35').css({scale: 0}).transition({
-                                        scale: 1, opacity: 1, delay: 800, complete: function () {
+                                        scale: 1, opacity: 1, delay: 500, complete: function () {
                                             $('.page3 .img37').css({}).transition({opacity: 1});
                                         }
                                     });
@@ -90,7 +98,7 @@ App.prototype = {
     },
     start: function () {
         $('.page > .animate').css({opacity: 0});
-        $('.page2 .img1,.page1 .img2').removeClass('swing'),
+        $('.page2 .img1,.page1 .img6,.page1 .img7,.page1 .img2').css({animation: '1s'}),
             $(".page2 .my-dishes").empty(), $('.page2 .dishes .dish').show(), mySwiper.slideTo(0), $('.page2 .txt24').hide();
         return this.goTo(0);
     },
@@ -120,7 +128,7 @@ App.prototype = {
 var app = new App();
 app.onshow = function (i) {
     if (i != 3) return this;
-    $.getJSON('/biz/ajax.php?action=similar', {from: getParam('from')}, function (data) {
+    $.getJSON('/biz/ajax.php?action=similar', {from: getParam('from_id')}, function (data) {
         var count = 0;
         $('.page4 .items').empty();
         for (var i in data) {

@@ -11,7 +11,6 @@ require_once __DIR__ . '/biz/dishConfig.php';
 require_once __DIR__ . '/wx/h.php';
 
 header('Content-Type: text/html;charset=utf-8');
-header('Cache-Control: no-cache');
 
 if (!isset($_SESSION['openid']))
     $_SESSION['openid'] = isset($_COOKIE['openid']) ? $_COOKIE['openid'] : null;
@@ -38,11 +37,16 @@ if (!$user)
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
     <meta name="imagemode" content="force">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     <meta http-equiv="charset" content="utf8"/>
+    <title>谁是你的菜</title>
     <link rel="stylesheet" href="css/base.css" charset="utf-8"/>
     <link rel="stylesheet" href="css/swiper3.1.0.min.css"/>
     <script src="js/jquery.min.js"></script>
@@ -74,7 +78,7 @@ if (!$user)
         openid: '<?echo $_SESSION['openid']?>'
     });
     $(function () {
-        document.title = $(document.body).width() + "," + $(document.body).height();
+        window.dev && (document.title = $(document.body).width() + "," + $(document.body).height());
         $('.my-head').attr('src', wx.user.headimgurl);
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
     });
@@ -165,7 +169,7 @@ if (!$user)
                                         $(t).css({scale: 1}).hide()
                                     }
                                 }))
-                                    .addClass('only swing').appendTo($('.page2 .my-dishes'));
+                                    .css({animation: 'tada-soon 1s ease'}).appendTo($('.page2 .my-dishes'));
                                 visibleQuestion();
                             }
                         });
@@ -196,10 +200,11 @@ if (!$user)
                     $.ajax({
                         url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
                             //dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)],
-                            from: getParam('from')
+                            from: getParam('from_id')
                         }, wx.user),
                         success: function (data) {
-                            $("#lblMsg").text(data.msg[0]), $("#lblMsg2").text(data.msg[1]), app.recId = data.id, app.done = true;
+                            $("#lblMsg").text(wx.user.kind = data.msg[0]), $("#lblMsg2").text(wx.user.detail = data.msg[1]);
+                            app.done = true, app.recId = data.id, app.share();
                             app.nextPage();
                         },
                     });
@@ -293,7 +298,7 @@ if (!$user)
                     app.start();
                 });
                 $("#btnPk").click(function () {
-                    $.getJSON('biz/ajax.php?action=pk', {from: getParam('from')}, function (data) {
+                    $.getJSON('biz/ajax.php?action=pk', {from: getParam('from_id')}, function (data) {
                         var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
                         var p = $(".page5 .items").empty();
                         for (var i in data.current || []) {
@@ -366,15 +371,16 @@ if (!$user)
         $jsWx=array(
             'jsapi_ticket'=>wx_get_jsapi_ticket(),
             'timestamp'=>time(),
-            'url'=>$_SERVER['REQUEST_URI'],
+            'url'=>"http://reinchat.com:8002/",//$_SERVER['REQUEST_URI']
             'nonceStr'=>'fkuwx'.time(),
         );
         ksort($jsWx);
-        $input=implode('&',array_map(function($k,$v){return "$k=$v";},array_keys($jsWx),array_values($jsWx)));
-        $jsWx['signature']=strtolower(sha1(strtolower($input)));
+        $input=implode('&',array_map(function($k,$v){return strtolower($k)."=$v";},array_keys($jsWx),array_values($jsWx)));
+        //echo "var input='$input'";
+        $jsWx['signature']=strtolower(sha1($input));
     ?>
     wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host;
-    wx.config({
+    wx.config(c = {
         debug: false,
         appId: "<?echo $config['appId']?>",
         timestamp: <?echo $jsWx['timestamp']?>,
@@ -382,28 +388,36 @@ if (!$user)
         signature: '<?echo $jsWx['signature']?>',
         jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
     });
-    var ts = {
-        yet: {icon: wx.user.headimgurl, title: wx.user.nickname + '是文艺级吃货，快看看你是否与我是同款吃货'},
-        had: {icon: host + '/img/fenxiang.png', title: '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'}
+    var t = {
+        icon: function () {
+            return app.done ? wx.user.headimgurl : host + '/img/fenxiang.png';
+        }, title: function () {
+            return app.done ? wx.user.nickname + '是' + wx.user.kind + '，快看看你是否与我是同款吃货' : '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'
+        }, url: function () {
+            return host + "?from_openid=" + wx.user.openid + (app.recId ? "&from_id=" + app.recId : '');
+        }, success: function (ret) {
+            //app.nextPage();
+        }
     };
-    var t = app.done ? ts.had : ts.yet;
-    t.icon = app.done ? wx.user.headimgurl : t.icon;
-    t.url = host + "?from=" + (app.id ? app.id : -1) + "&from_openid=" + wx.user.openid;
-    wx.ready(function () {
+    App.prototype.share = function () {
+        var gc = function () {
+            return {
+                title: t.title(), // 分享标题
+                link: t.url(),
+                imgUrl: t.icon(), // 分享图标
+                //success: t.success,
+            };
+        };
         // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
-        wx.onMenuShareTimeline({
-            title: t.title, // 分享标题
-            link: t.url,
-            imgUrl: t.icon" // 分享图标
-        });
-        // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
-        wx.onMenuShareAppMessage({
-            title: t.title, // 分享标题
-            desc: "", // 分享描述
-            link: t.url,
-            imgUrl: t.icon, // 分享图标
-            type: 'link', // 分享类型,music、video或link，不填默认为link
-        });
+        wx.onMenuShareTimeline(gc());
+        // 获取“分享给朋友”按钮点击状态及自定义分享内容接口{
+        /*desc: "", // 分享描述
+         type: 'link', // 分享类型,music、video或link，不填默认为link
+         }*/
+        wx.onMenuShareAppMessage(gc());
+    }
+    wx.ready(function () {
+        app.share();
     });
 </script>
 </body>
