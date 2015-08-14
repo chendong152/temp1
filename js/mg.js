@@ -89,18 +89,19 @@ App.prototype = {
         return this.goTo($('.page.active').index() + 1);
     },
     goTo: function (i) {
+        if (i + 1 > $(".page").length) return;
         var self = $('.page.active'), fn = this._animates['p' + (i + 1)];
         self.removeClass('active')
             .parent().css({transform: 'translateX(' + -$(".con>.page").width() * i + "px)"})
             .find(".page:eq(" + i + ")").addClass('active');
         fn && fn();
-        return this.onshow ? this.onshow.call(this, i) && this : this;
+        return this.onshow && this.onshow.call(this, i) , this;
     },
-    start: function () {
+    start: function (i) {
         $('.page > .animate').css({opacity: 0});
         $('.page2 .img1,.page1 .img6,.page1 .img7,.page1 .img2').css({animation: '1s'}),
             $(".page2 .my-dishes").empty(), $('.page2 .dishes .dish').show(), mySwiper.slideTo(0), $('.page2 .txt24').hide();
-        return this.goTo(0);
+        return this.goTo(parseInt(i) || 0);
     },
     init: function () {
         var self = this;
@@ -114,7 +115,7 @@ App.prototype = {
                             this.remove();
                         }
                     });
-                    self.start();
+                    self.start(getParam("p") || 0);
                 }
             }).length;
             $("img[loadsrc]").each(function () {
@@ -128,14 +129,17 @@ App.prototype = {
 var app = new App();
 app.onshow = function (i) {
     if (i != 3) return this;
-    $.getJSON('/biz/ajax.php?action=similar', {from: getParam('from_id')}, function (data) {
+    $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done ? '我也要玩.png' : 'metoo.png')));
+    $.getJSON('/biz/ajax.php?action=similar', {
+        from: getParam('from_id'),
+        bench: app.done ? 'me' : null
+    }, function (data) {
         var count = 0;
         $('.page4 .items').empty();
         for (var i in data) {
             var item = data[i];
             item['thumb'] = item.similar == 100 ? ++count && 'thumb' : '';
             item['comp'] = item.similar == 100 ? '' : '不';
-            item['bench'] = item.nickname == wx.user.nickname ? '你' : item.nickname;
             var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
             $('.page4 .items').append($(replace(li, item)));
         }

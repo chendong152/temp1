@@ -6,6 +6,7 @@
  * Time: 1:01
  */
 session_start();
+require_once __DIR__ . '/biz/mysql.class.php';
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/biz/dishConfig.php';
 require_once __DIR__ . '/wx/h.php';
@@ -25,7 +26,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":"openid6","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"openid16","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
 else
@@ -33,6 +34,10 @@ else
 
 if (!$user)
     exit('no user');
+
+$from_id = isset($_REQUEST['from_id']) ? $_REQUEST['from_id'] : null;
+$bench = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.id=$from_id");
+if ($bench) $bench = $bench[0];
 ?>
 <!DOCTYPE html>
 <html>
@@ -68,6 +73,7 @@ if (!$user)
     wx = window.wx || {};
     try {
         wx.user =<?echo json_encode($user)?>;
+        wx.owner =<?echo json_encode($bench?$bench:array())?>;
     } catch (ex) {
         alert(ex)
     }
@@ -200,7 +206,7 @@ if (!$user)
                     $.ajax({
                         url: 'biz/ajax.php?action=check', dataType: "json", type: "POST", data: $.extend({
                             //dishes: [1, Math.floor(Math.random() * 12), Math.floor(Math.random() * 12)],
-                            from: getParam('from_id')
+                            from: app.renew ? null : getParam('from_id')
                         }, wx.user),
                         success: function (data) {
                             $("#lblMsg").text(wx.user.kind = data.msg[0]), $("#lblMsg2").text(wx.user.detail = data.msg[1]);
@@ -258,7 +264,8 @@ if (!$user)
             <img class="img37 animate" loadsrc="img/3/quzhaotongkuan.png" id="btnGoResult"/>
             <script type="text/javascript">
                 $("#btnGoResult").click(function () {
-                    app.nextPage();
+                    app.willGo4 = true, $(".shares").show();
+                    //app.nextPage();
                 });
             </script>
         </div>
@@ -266,7 +273,7 @@ if (!$user)
         <div class="page swiper-slide2 page4">
             <img class="img43 my-head" load="img/h.png"/>
 
-            <div class="txt44 ">已找到<span class="count">1</span>个同款</div>
+            <div class="txt44 ">已找到<span class="count">0</span>个同款</div>
             <ul class="items">
                 <!--li class="thumb">
                     <img class="head_img" loadsrc="img/h.png"/>
@@ -295,7 +302,7 @@ if (!$user)
             <img class="img45 " loadsrc="/img/4/chakanpaihang.png" id="btnPk">
             <script type="text/javascript">
                 $("#btnRestart1").click(function () {
-                    app.start();
+                    app.start().renew = $('.page4 .img44[src*=metoo]').length == 0;
                 });
                 $("#btnPk").click(function () {
                     $.getJSON('biz/ajax.php?action=pk', {from: getParam('from_id')}, function (data) {
@@ -371,7 +378,7 @@ if (!$user)
         $jsWx=array(
             'jsapi_ticket'=>wx_get_jsapi_ticket(),
             'timestamp'=>time(),
-            'url'=>"http://reinchat.com:8002/",//$_SERVER['REQUEST_URI']
+            'url'=>"{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",//
             'nonceStr'=>'fkuwx'.time(),
         );
         ksort($jsWx);
@@ -394,9 +401,10 @@ if (!$user)
         }, title: function () {
             return app.done ? wx.user.nickname + '是' + wx.user.kind + '，快看看你是否与我是同款吃货' : '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'
         }, url: function () {
-            return host + "?from_openid=" + wx.user.openid + (app.recId ? "&from_id=" + app.recId : '');
+            return host + "?p=3&from_openid=" + wx.user.openid + (app.recId ? "&from_id=" + app.recId : '');
         }, success: function (ret) {
-            //app.nextPage();
+            app.willGo4 && app.nextPage();
+            $(".shares").hide();
         }
     };
     App.prototype.share = function () {
@@ -420,5 +428,57 @@ if (!$user)
         app.share();
     });
 </script>
+<div class="shares"><img loadsrc="img/shares.png"/>
+    <style>.shares {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            top: 0;
+            height: 100%;
+            z-index: 300;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+        }
+        .shares > img { width: 100%; }
+    </style>
+    <script type="text/javascript">
+        $(".shares").click(function () { $(this).toggle(); });
+    </script>
+</div>
+<div id="music">
+    <div class="music"></div>
+    <span>开启</span>
+    <audio src="js/m.mp3" id="mp3" loop autoplay="autoplay"></audio>
+    <style>
+        #music {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            right: 8px;
+            top: 8px;
+            z-index: 10;
+            opacity: 0.5;
+        }
+        #music > span {
+            color: #fff;
+            position: absolute;
+            left: -56px;
+            top: 0;
+            line-height: 36px;
+            font-size: 14px;
+            opacity: 0;
+            -webkit-transition: all 0.3s linear;
+            transition: all 0.3s linear;
+        }
+        .music {
+            width: 100%;
+            height: 100%;
+            background: url(img/music.png) no-repeat center center;
+            background-size: 100%;
+            -webkit-animation: rotate 1s linear infinite;
+        }
+    </style>
+    <script type="text/javascript">if (location.host.match(/192\./)) $("audio")[0].pause()</script>
+</div>
 </body>
 </html>
