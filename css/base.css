@@ -133,7 +133,8 @@ body > .wrapper { max-width: 640px; overflow: hidden; margin: 0 auto; }
 .page5 .img52 { top: 12%; right: 11%; width: 37.5%; height: 7%; background-size: 100% 100%; background-image: url("../img/5/wangqipaihang_2.png"); }
 .page5 .img52.active { background-image: url("../img/5/wangqipaihang_1.png"); }
 .page5 .img53 { width: 76%; left: 12%; bottom: 2.5%; }
-.page5 .items { height: 65.5%; width: 100%; top: 21%; padding: 0%; margin: 0; list-style-type: none; }
+.page5 .wrapper { height: 65.5%; width: 100%; overflow: hidden; top: 21%; }
+.page5 .items { height: 100%; width: 100%; float: left; padding: 0%; margin: 0; list-style-type: none; overflow-y: auto; }
 .page5 .items .item { height: 20%; box-shadow: 0 1px #D06A45; }
 .page5 .items .item > * { display: table-cell; }
 .page5 .items .item:last-child { box-shadow: none; }
@@ -142,5 +143,10 @@ body > .wrapper { max-width: 640px; overflow: hidden; margin: 0 auto; }
 .page5 .items .item.thumb .index { color: white; }
 .page5 .items .item .head_img { width: 15%; float: left; margin: 2.5% 1em 0 0; border-radius: 50%; }
 .page5 .items .item dl, .page5 .items .item dd { margin: 0; }
-.page5 .items .item dl { float: left; width: 60%; margin-top: 4%; }
+.page5 .items .item dl { /*float: left;*/ width: 60%; margin-top: 4%; padding-top: .75em; }
 .page5 .items .item dl dt { font-size: 1.25em; }
+.page5 .items.history .item { position: relative; background: url(../img/5/arow.png) 85% center no-repeat; background-size: auto 35%; }
+.page5 .items.history .item > * { height: 3.5em; position: absolute; top: 50%; left: 10%; margin-top: -1.75em; }
+.page5 .items.history .item > * > * { display: block; }
+.page5 .items.history .item > * > .l { font-size: 1.25em; }
+

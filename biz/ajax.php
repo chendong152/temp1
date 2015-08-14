@@ -95,6 +95,8 @@ function similar() {
     $current = json_decode($_SESSION['user']);//当前玩家
     $from_id = $_REQUEST['from'];
     if ($from_id) {
+        //return array_slice(pkById($from_id), 0, 3);
+
         //主玩家（本期的发起者）记录
         $bench = $db->exec("select * from savor_user_record WHERE  id=$from_id");
         if ($bench) $bench = $bench[0];
@@ -132,17 +134,43 @@ function pk() {
     $from = $_REQUEST['from'];
     $rec = $db->select('user_record')->where("id=$from")->done();
     if ($rec) $rec = $rec[0];
-    $isMyself = $rec['openid'] == $user->openid;
 
+    //当前登陆用户的最后一次记录
+    $myLast = "select * from savor_user_record where openid='{$user->openid}' limit 1";
+    $myLast = $db->exec($myLast);
+    if ($myLast) $myLast = $myLast[0];
+
+    $isMyself = $rec['openid'] == $user->openid;
     $ret = array();
     //如果是我自己，则返回当期排行
     if ($isMyself) {
-        $ret['current'] = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$from");
-        usort($ret['current'], function ($i1, $i2) {
-            return $i2['similar'] - $i1['similar'];
-        });
     }
-    //返回历史排行
-    $ret['history'] = $db->select("user_record")->where("where openid='{$user->openid}'")->done();
+
+    if (!$from) $from = $myLast['id'];//如果不是从分享进去，则是发起一期游戏，获取刚刚发起的这期（实际上一般还没有别人玩，是没有数据的）
+    $ret['current'] = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$from");
+    usort($ret['current'], function ($i1, $i2) {
+        return $i2['similar'] - $i1['similar'];
+    });
+
+    //返回（我的，不管本次是不是别人发起的）历史排行
+    //$ret['history'] = $db->select("user_record")->where("where openid='{$user->openid}'")->done();
+    $sql = "select * from (select id,create_time,count from savor_user_record r,
+(SELECT from_id,count(1) count FROM `savor_user_record` where from_openid='{$user->openid}' group by from_id) g
+where r.id=g.from_id
+union
+SELECT  id,create_time,0 from savor_user_record where openid='{$user->openid}' and from_id is NULL)t order by create_time desc";
+    $ret['history'] = $db->exec($sql);
+
     return $ret;
+}
+
+//根据记录id，获取对应期的排行
+function pkById($id = null) {
+    global $db;
+    $id = $id ? $id : $_REQUEST['id'];
+    $rs = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$id");
+    usort($rs, function ($i1, $i2) {
+        return $i2['similar'] - $i1['similar'];
+    });
+    return $rs;
 }

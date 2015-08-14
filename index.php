@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":"openid16","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"openid6","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
 else
@@ -305,67 +305,72 @@ if ($bench) $bench = $bench[0];
                     app.start().renew = $('.page4 .img44[src*=metoo]').length == 0;
                 });
                 $("#btnPk").click(function () {
-                    $.getJSON('biz/ajax.php?action=pk', {from: getParam('from_id')}, function (data) {
-                        var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
-                        var p = $(".page5 .items").empty();
-                        for (var i in data.current || []) {
-                            var item = data.current[i];
-                            item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
-                            p.append($(replace(li, item)));
-                        }
-                        app.nextPage();
-                    });
+                    app.nextPage();
                 });
             </script>
         </div>
 
         <div class="page swiper-slide2 page5">
-            <div class=" img51 active"></div>
-            <div class=" img52"></div>
-            <ul class="items ">
-                <li class="item thumb">
-                    <label class="index">1</label>
-                    <img class="head_img" loadsrc="img/h.png">
-                    <dl>
-                        <dt>则卷</dt>
-                        <dd>与你的相似度100%</dd>
-                    </dl>
-                </li>
-                <li class="item thumb">
-                    <label class="index">1</label>
-                    <img class="head_img" loadsrc="img/h.png">
-                    <dl>
-                        <dt>则卷</dt>
-                        <dd>与你的相似度100%</dd>
-                    </dl>
-                </li>
-                <li class="item thumb">
-                    <label class="index">1</label>
-                    <img class="head_img" loadsrc="img/h.png">
-                    <dl>
-                        <dt>则卷</dt>
-                        <dd>与你的相似度100%</dd>
-                    </dl>
-                </li>
-                <li class="item ">
-                    <label class="index">1</label>
-                    <img class="head_img" loadsrc="img/h.png">
-                    <dl>
-                        <dt>则卷</dt>
-                        <dd>与你的相似度100%</dd>
-                    </dl>
-                </li>
-                <li class="item ">
-                    <label class="index">1</label>
-                    <img class="head_img" loadsrc="img/h.png">
-                    <dl>
-                        <dt>则卷</dt>
-                        <dd>与你的相似度100%</dd>
-                    </dl>
-                </li>
-            </ul>
+            <div class=" img51 active s" data-index="0"></div>
+            <div class=" img52 s" data-index="1"></div>
+            <div class="wrapper">
+                <ul class="items current" style="">
+                    <!--li class="item thumb">
+                        <label class="index">1</label>
+                        <img class="head_img" loadsrc="img/h.png">
+                        <dl>
+                            <dt>则卷</dt>
+                            <dd>与你的相似度100%</dd>
+                        </dl>
+                    </li-->
+                </ul>
+                <ul class="items history">
+                    <li class="item">
+                        <div>
+                            <label class="l">2015-1-1</label>
+                            <label>共找到12个同款</label>
+                        </div>
+                    </li>
+                    <li class="item">
+                        <div>
+                            <label class="l">2015-1-1</label>
+                            <label>共找到12个同款</label>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="items his-cur" style="">
+                    <li class="item thumb">
+                        <label class="index">1</label>
+                        <img class="head_img" loadsrc="img/h.png">
+                        <dl>
+                            <dt>则卷</dt>
+                            <dd>与你的相似度100%</dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+
             <img class="img53 " loadsrc="img/5/chongxinfaqi.png" id="btnRestart"/>
             <script type="text/javascript">
+                var p = $('.page5 .wrapper');
+                p.width(p.children().width($(window).width()).length * $(window).width());
+                $(".page5 .s").click(function () {
+                    $('.page5 .s').removeClass('active'), $('.page5 .wrapper').transition({
+                        x: -parseInt($(this).addClass('active').data("index")) * $(window).width()
+                    });
+                });
+                $(".page5 .history").delegate('li', 'click', function () {console.log('on')
+                    $.getJSON("biz/ajax.php?action=pkById", {id: $(this).data("id")}, function (data) {
+                        $('.page5 .wrapper').transition({x: -2 * $(window).width()});
+                        var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
+                        var p = $(".page5 .items.his-cur").empty();
+                        for (var i in data || []) {
+                            var item = data[i];
+                            item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
+                            p.append($(replace(li, item)));
+                        }
+                    });
+                });
                 $("#btnRestart").click(function () {
                     app.start();
                 })
@@ -413,7 +418,7 @@ if ($bench) $bench = $bench[0];
                 title: t.title(), // 分享标题
                 link: t.url(),
                 imgUrl: t.icon(), // 分享图标
-                //success: t.success,
+                success: t.success,
             };
         };
         // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
