@@ -130,7 +130,7 @@ var app = new App();
 app.onshow = function (i) {
     switch (i) {
         case  3:
-            $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done ? '我也要玩.png' : 'metoo.png')));
+            $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done || (wx.myRec && wx.myRec.id > 0) ? '我也要玩.png' : 'metoo.png')));
             $.getJSON('/biz/ajax.php?action=similar', {
                 from: getParam('from_id'),
                 bench: app.done ? 'me' : null
@@ -139,8 +139,8 @@ app.onshow = function (i) {
                 $('.page4 .items').empty();
                 for (var i in data) {
                     var item = data[i];
-                    item['thumb'] = item.similar == 100 ? ++count && 'thumb' : '';
-                    item['comp'] = item.similar == 100 ? '' : '不';
+                    item['thumb'] = item.result_kind==wx.owner.result_kind ? ++count && 'thumb' : '';
+                    item['comp'] = item.result_kind==wx.owner.result_kind  ? '' : '不';
                     var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
                     $('.page4 .items').append($(replace(li, item)));
                 }
@@ -157,10 +157,10 @@ app.onshow = function (i) {
                     p.append($(replace(li, item)));
                 }
                 p = $(".page5 .items.history").empty();
-                li='<li class="item" data-id={id}><div><label class="l">{date}</label><label>共找到{count}个同款</label></div></li>'
+                li = '<li class="item" data-id={id}><div><label class="l">{date}</label><label>共找到{count}个同款</label></div></li>'
                 for (var i in data.history || []) {
                     var item = data.history[i];
-                    item.date = item.create_time.substr(0,10);
+                    item.date = item.create_time.substr(0, 10);
                     p.append($(replace(li, item)));
                 }
             });

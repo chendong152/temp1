@@ -38,6 +38,8 @@ if (!$user)
 $from_id = isset($_REQUEST['from_id']) ? $_REQUEST['from_id'] : null;
 $bench = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.id=$from_id");
 if ($bench) $bench = $bench[0];
+$myRec = $db->exec("select * from savor_user_record where openid='{$user->openid}' and from_id=$from_id");
+if ($myRec) $myRec = $myRec[0];
 ?>
 <!DOCTYPE html>
 <html>
@@ -74,6 +76,7 @@ if ($bench) $bench = $bench[0];
     try {
         wx.user =<?echo json_encode($user)?>;
         wx.owner =<?echo json_encode($bench?$bench:array())?>;
+        wx.myRec =<?echo json_encode($myRec?$myRec:array())?>;
     } catch (ex) {
         alert(ex)
     }
@@ -359,7 +362,7 @@ if ($bench) $bench = $bench[0];
                         x: -parseInt($(this).addClass('active').data("index")) * $(window).width()
                     });
                 });
-                $(".page5 .history").delegate('li', 'click', function () {console.log('on')
+                $(".page5 .history").delegate('li', 'click', function () {
                     $.getJSON("biz/ajax.php?action=pkById", {id: $(this).data("id")}, function (data) {
                         $('.page5 .wrapper').transition({x: -2 * $(window).width()});
                         var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
@@ -372,7 +375,7 @@ if ($bench) $bench = $bench[0];
                     });
                 });
                 $("#btnRestart").click(function () {
-                    app.start();
+                    app.start().renew = true;
                 })
             </script>
         </div>
@@ -406,7 +409,7 @@ if ($bench) $bench = $bench[0];
         }, title: function () {
             return app.done ? wx.user.nickname + '是' + wx.user.kind + '，快看看你是否与我是同款吃货' : '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'
         }, url: function () {
-            return host + "?p=3&from_openid=" + wx.user.openid + (app.recId ? "&from_id=" + app.recId : '');
+            return host + "?from_openid=" + wx.user.openid + (app.recId ? "&p=3&from_id=" + app.recId : '');
         }, success: function (ret) {
             app.willGo4 && app.nextPage();
             $(".shares").hide();
@@ -444,10 +447,13 @@ if ($bench) $bench = $bench[0];
             background: rgba(0, 0, 0, 0.7);
             display: none;
         }
+
         .shares > img { width: 100%; }
     </style>
     <script type="text/javascript">
-        $(".shares").click(function () { $(this).toggle(); });
+        $(".shares").click(function () {
+            $(this).toggle();
+        });
     </script>
 </div>
 <div id="music">
@@ -464,6 +470,7 @@ if ($bench) $bench = $bench[0];
             z-index: 10;
             opacity: 0.5;
         }
+
         #music > span {
             color: #fff;
             position: absolute;
@@ -475,6 +482,7 @@ if ($bench) $bench = $bench[0];
             -webkit-transition: all 0.3s linear;
             transition: all 0.3s linear;
         }
+
         .music {
             width: 100%;
             height: 100%;

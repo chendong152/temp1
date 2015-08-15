@@ -17,7 +17,8 @@ session_start();
 echo json_encode(!empty($_GET['action']) ? $_GET['action']() : json_encode(array('code' => 404, 'msg' => '当前action不存在')));
 exit;
 
-function check() {
+function check()
+{
     global $allDishes, $config, $db;
     $user = json_decode($_SESSION['user']);
     if (!$user) return array('msg' => 'no user');
@@ -34,8 +35,8 @@ function check() {
 
     //记录结果到库:用户基本信息、选择的3个菜品、最高分和最低分键值对、结果鉴定语、时间 (重玩时更新用户信息，新增游戏数据)
     $data = array(
-        'nickname'   => $user->nickname,
-        'openid'     => $user->openid,
+        'nickname' => $user->nickname,
+        'openid' => $user->openid,
         'headimgurl' => $user->headimgurl,
     );
     $exists = $db->select("user")->where("openid='{$data['openid']}'")->limit(1)->done();
@@ -55,15 +56,15 @@ function check() {
     if ($exists)
         return array('msg' => array('本期已玩过了'));//一期只能玩一次
     $data = array(
-        'openid'        => $data['openid'],
-        'dishes'        => implode(',', $ds),
-        'style'         => implode(',', array_values($merge->toArray())),
-        'score_high'    => key($scores['high']) . ':' . current($scores['high']),
-        'score_low'     => key($scores['low']) . ':' . current($scores['low']),
-        'result_kind'   => $texts[0],
+        'openid' => $data['openid'],
+        'dishes' => implode(',', $ds),
+        'style' => implode(',', array_values($merge->toArray())),
+        'score_high' => key($scores['high']) . ':' . current($scores['high']),
+        'score_low' => key($scores['low']) . ':' . current($scores['low']),
+        'result_kind' => $texts[0],
         'result_detail' => $texts[1],
-        'from_id'       => $from,
-        'from_openid'   => isset($_REQUEST['from_openid']) ? $_REQUEST['from_openid'] : null,
+        'from_id' => $from,
+        'from_openid' => isset($_REQUEST['from_openid']) ? $_REQUEST['from_openid'] : null,
     );
     //相似度
     if (!empty($data['from_id'])) {
@@ -80,7 +81,8 @@ function check() {
     return array('code' => 0, 'score' => 1, 'msg' => $texts, 'id' => $id['id']);
 }
 
-function t() {
+function t()
+{
     print_r($_SERVER);
 }
 
@@ -89,7 +91,8 @@ function t() {
  * @return array
  *
  */
-function similar() {
+function similar()
+{
     global $db;
     $tn = 'user_record';
     $current = json_decode($_SESSION['user']);//当前玩家
@@ -102,17 +105,16 @@ function similar() {
         if ($bench) $bench = $bench[0];
 
         //查找本期(除当前玩家外。基于：一个玩家一期只能玩一次)所有参与记录
-        $sql = "select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id={$from_id} and r.openid<>'{$current->openid}'";
+        $sql = "select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id={$from_id} and r.openid<>'{$current->openid}' order by similar DESC ";
         $rs = $db->exec($sql);//select($tn)->where("from_id=$from and openid<>'{$current->openid}'")->done();
 
         //计算所有参与记录与当前玩家的相似度
-        $me = $db->select($tn)->where("from_id=$from_id and openid='{$current->openid}'")->done();//当前玩家数据
-        if (is_array($me)) $me = $me[0];//当前玩家的本次游戏记录
+        // $me = $db->select($tn)->where("from_id=$from_id and openid='{$current->openid}'")->done();//当前玩家数据
+        //if (is_array($me)) $me = $me[0];//当前玩家的本次游戏记录
+        // if (!$me) return array();
 
-        if (!$me) return array();
-
-        $similars = array_map(function ($r) use ($me, $bench, $current) {
-            $r['similar'] = User::match(get_dish($me['dishes']), get_dish($r['dishes']));
+        $similars = array_map(function ($r) use (/*$me,*/ $bench, $current) {
+            //$r['similar'] = User::match(get_dish($me['dishes']), get_dish($r['dishes']));
             $r['bench'] = $bench['openid'] == $current->openid ? '你' : $current->nickname;
             return $r;
         }, $rs);
@@ -128,7 +130,8 @@ function similar() {
     //如果好友从分享的链接点出来，前端显示“我是同味吃货吗”，让好友游戏
 }
 
-function pk() {
+function pk()
+{
     global $db;
     $user = json_decode($_SESSION['user']);
     $from = $_REQUEST['from'];
@@ -140,13 +143,10 @@ function pk() {
     $myLast = $db->exec($myLast);
     if ($myLast) $myLast = $myLast[0];
 
-    $isMyself = $rec['openid'] == $user->openid;
     $ret = array();
-    //如果是我自己，则返回当期排行
-    if ($isMyself) {
-    }
 
-    if (!$from) $from = $myLast['id'];//如果不是从分享进去，则是发起一期游戏，获取刚刚发起的这期（实际上一般还没有别人玩，是没有数据的）
+    //if (!$from) $from = $myLast['id'];//如果不是从分享进去，则是发起一期游戏，获取刚刚发起的这期（实际上一般还没有别人玩，是没有数据的）
+    $from = $myLast['id'];//始终查看登陆用户最后一期排行
     $ret['current'] = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$from");
     usort($ret['current'], function ($i1, $i2) {
         return $i2['similar'] - $i1['similar'];
@@ -165,7 +165,8 @@ SELECT  id,create_time,0 from savor_user_record where openid='{$user->openid}' a
 }
 
 //根据记录id，获取对应期的排行
-function pkById($id = null) {
+function pkById($id = null)
+{
     global $db;
     $id = $id ? $id : $_REQUEST['id'];
     $rs = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$id");
