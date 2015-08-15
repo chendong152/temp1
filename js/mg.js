@@ -123,6 +123,7 @@ App.prototype = {
             });
             self.__inited = true;
         }
+        return self;
     }
 }
 ;
@@ -173,7 +174,7 @@ app.onshow = function (i) {
     return this;
 }
 $(function () {
-    app.init();
+    app.init().renew=!getParam("from_id");
 });
 
 function drawProcess(p) {
