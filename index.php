@@ -275,9 +275,28 @@ if ($myRec) $myRec = $myRec[0];
 
         <div class="page swiper-slide2 page4">
             <img class="img43 my-head" load="img/h.png"/>
+            <div class="txt42">
+                <div><label class="nickname"></label>的吃货类别：<em class="kind"></em></div>
+                <div class="detail"></div>
+            </div>
 
             <div class="txt44 ">已找到<span class="count">0</span>个同款</div>
+            <style>
+                table{width:100%;height: 100%;border-collapse: collapse;padding: 0; border: none;}
+                td:first-child{ width: 35%;text-align: center;}
+            </style>
             <ul class="items">
+                <li>
+                    <table>
+                        <tr>
+                            <td><img class="head_img" loadsrc="img/h.png"/></td>
+                            <td>
+                                     <em class="other_alias">卷</em>与<span class="bench">你</span><span class="verb">不是</span>同款吃货
+                                    </br>
+                                    他是<em>文艺级吃货</em></td>
+                        </tr>
+                    </table>
+                </li>
                 <!--li class="thumb">
                     <img class="head_img" loadsrc="img/h.png"/>
                     <dl>

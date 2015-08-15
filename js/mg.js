@@ -141,10 +141,14 @@ app.onshow = function (i) {
                     var item = data[i];
                     item['thumb'] = item.result_kind==wx.owner.result_kind ? ++count && 'thumb' : '';
                     item['comp'] = item.result_kind==wx.owner.result_kind  ? '' : '不';
+                    item['disp']=item.result_kind==wx.owner.result_kind  ? 'display:none' : '';
                     var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
+                    li='<li class="{thumb}"><table><tr><td><img class="head_img" src="{headimgurl}"/></td><td><em class="other_alias">{nickname}</em>与<span class="bench">{bench}</span><span class="verb">{comp}</span>是同款吃货</br><span style="{disp}">他是<em>{result_kind}</em></span></td></tr></table></li>'
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
+                $(".page4 .txt42 .nickname").text(wx.owner.nickname),$(".page4 .txt42 .kind").text(wx.owner.result_kind ),
+                    $(".page4 .txt42 .detail").text(wx.owner.result_detail);
             });
             break;
         case 4:
