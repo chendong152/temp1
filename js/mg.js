@@ -130,24 +130,25 @@ var app = new App();
 app.onshow = function (i) {
     switch (i) {
         case  3:
+            $('.page4 .my-head').attr('src', app.recId || !wx.owner.openid ? wx.user.headimgurl : wx.owner.headimgurl);
             $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done || (wx.myRec && wx.myRec.id > 0) ? '我也要玩.png' : 'metoo.png')));
             $.getJSON('/biz/ajax.php?action=similar', {
-                from: getParam('from_id'),
+                from: app.recId ? app.recId : getParam('from_id'),
                 bench: app.done ? 'me' : null
             }, function (data) {
                 var count = 0;
                 $('.page4 .items').empty();
                 for (var i in data) {
                     var item = data[i];
-                    item['thumb'] = item.result_kind==wx.owner.result_kind ? ++count && 'thumb' : '';
-                    item['comp'] = item.result_kind==wx.owner.result_kind  ? '' : '不';
-                    item['disp']=item.result_kind==wx.owner.result_kind  ? 'display:none' : '';
+                    item['thumb'] = item.result_kind == wx.owner.result_kind ? ++count && 'thumb' : '';
+                    item['comp'] = item.result_kind == wx.owner.result_kind ? '' : '不';
+                    item['disp'] = item.result_kind == wx.owner.result_kind ? 'display:none' : '';
                     var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
-                    li='<li class="{thumb}"><table><tr><td><img class="head_img" src="{headimgurl}"/></td><td><em class="other_alias">{nickname}</em>与<span class="bench">{bench}</span><span class="verb">{comp}</span>是同款吃货</br><span style="{disp}">他是<em>{result_kind}</em></span></td></tr></table></li>'
+                    li = '<li class="{thumb}"><table><tr><td><img class="head_img" src="{headimgurl}"/></td><td><em class="other_alias">{nickname}</em>与<span class="bench">{bench}</span><span class="verb">{comp}</span>是同款吃货</br><span style="{disp}">他是<em>{result_kind}</em></span></td></tr></table></li>'
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
-                $(".page4 .txt42 .nickname").text(wx.owner.nickname),$(".page4 .txt42 .kind").text(wx.owner.result_kind ),
+                $(".page4 .txt42 .nickname").text(wx.owner.nickname), $(".page4 .txt42 .kind").text(wx.owner.result_kind),
                     $(".page4 .txt42 .detail").text(wx.owner.result_detail);
             });
             break;

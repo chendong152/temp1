@@ -88,7 +88,6 @@ if ($myRec) $myRec = $myRec[0];
     });
     $(function () {
         window.dev && (document.title = $(document.body).width() + "," + $(document.body).height());
-        $('.my-head').attr('src', wx.user.headimgurl);
         $('.con').width($('.page').width($(".wrapper").width()).width() * $('.con>.page').length + 100);
     });
 </script>
@@ -213,8 +212,8 @@ if ($myRec) $myRec = $myRec[0];
                         }, wx.user),
                         success: function (data) {
                             $("#lblMsg").text(wx.user.kind = data.msg[0]), $("#lblMsg2").text(wx.user.detail = data.msg[1]);
-                            app.done = true, app.recId = data.id, app.share();
-                            app.nextPage();
+                            app.done = true, app.recId = app.renew ? data.id : null, app.share();
+                            app.goTo(getParam('from_id') && !app.renew ? 3 : 2);
                         },
                     });
                 })
@@ -275,6 +274,7 @@ if ($myRec) $myRec = $myRec[0];
 
         <div class="page swiper-slide2 page4">
             <img class="img43 my-head" load="img/h.png"/>
+
             <div class="txt42">
                 <div><label class="nickname"></label>的吃货类别：<em class="kind"></em></div>
                 <div class="detail"></div>
@@ -282,8 +282,9 @@ if ($myRec) $myRec = $myRec[0];
 
             <div class="txt44 ">已找到<span class="count">0</span>个同款</div>
             <style>
-                table{width:100%;height: 100%;border-collapse: collapse;padding: 0; border: none;}
-                td:first-child{ width: 35%;text-align: center;}
+                table { width: 100%; height: 100%; border-collapse: collapse; padding: 0; border: none; }
+                td:first-child { width: 35%; text-align: center; }
+                td:last-child { padding-right: 1em; }
             </style>
             <ul class="items">
                 <li>
@@ -291,9 +292,9 @@ if ($myRec) $myRec = $myRec[0];
                         <tr>
                             <td><img class="head_img" loadsrc="img/h.png"/></td>
                             <td>
-                                     <em class="other_alias">卷</em>与<span class="bench">你</span><span class="verb">不是</span>同款吃货
-                                    </br>
-                                    他是<em>文艺级吃货</em></td>
+                                <em class="other_alias">卷</em>与<span class="bench">你</span><span class="verb">不是</span>同款吃货
+                                </br>
+                                他是<em>文艺级吃货</em></td>
                         </tr>
                     </table>
                 </li>
@@ -324,7 +325,7 @@ if ($myRec) $myRec = $myRec[0];
             <img class="img45 " loadsrc="/img/4/chakanpaihang.png" id="btnPk">
             <script type="text/javascript">
                 $("#btnRestart1").click(function () {
-                    app.start().renew = $('.page4 .img44[src*=metoo]').length == 0;
+                    app.start((app.renew = $('.page4 .img44[src*=metoo]').length == 0) ? 0 : 1);
                 });
                 $("#btnPk").click(function () {
                     app.nextPage();
@@ -422,15 +423,20 @@ if ($myRec) $myRec = $myRec[0];
         signature: '<?echo $jsWx['signature']?>',
         jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
     });
+    function r() {
+        return app.recId ? $.extend(wx.user, {id: app.recId}) : (wx.user.openid == wx.owner.openid ? wx.owner : null);
+    }
     var t = {
         icon: function () {
-            return app.done ? wx.user.headimgurl : host + '/img/fenxiang.png';
+            return r() ? r().headimgurl : host + '/img/fenxiang.png';
         }, title: function () {
-            return app.done ? wx.user.nickname + '是' + wx.user.kind + '，快看看你是否与我是同款吃货' : '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'
+            var t = r();
+            return t ? t.nickname + '是' + (t.result_kind || t.kind) + '，快看看你是否与我是同款吃货' : '快快寻找身边的同款吃货 ，一起行走在去吃的路上吧'
         }, url: function () {
-            return host + "?from_openid=" + wx.user.openid + (app.recId ? "&p=3&from_id=" + app.recId : '');
+            var t = r();
+            return host + "?from_openid=" + (t ? t.openid : '') + (t ? "&p=3&from_id=" + t.id : '');
         }, success: function (ret) {
-            app.willGo4 && app.nextPage();
+            app.willGo4 && app.goTo(3);
             $(".shares").hide();
         }
     };
@@ -466,7 +472,6 @@ if ($myRec) $myRec = $myRec[0];
             background: rgba(0, 0, 0, 0.7);
             display: none;
         }
-
         .shares > img { width: 100%; }
     </style>
     <script type="text/javascript">
@@ -489,7 +494,6 @@ if ($myRec) $myRec = $myRec[0];
             z-index: 10;
             opacity: 0.5;
         }
-
         #music > span {
             color: #fff;
             position: absolute;
@@ -501,7 +505,6 @@ if ($myRec) $myRec = $myRec[0];
             -webkit-transition: all 0.3s linear;
             transition: all 0.3s linear;
         }
-
         .music {
             width: 100%;
             height: 100%;
