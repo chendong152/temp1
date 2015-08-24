@@ -276,28 +276,6 @@ if ($myRec) $myRec = $myRec[0];
                         </tr>
                     </table>
                 </li>
-                <!--li class="thumb">
-                    <img class="head_img" loadsrc="img/h.png"/>
-                    <dl>
-                        <dt><em class="other_alias">卷</em>与<span class="bench">你</span><span class="verb">不是</span>同款吃货
-                        </dt>
-                        <dd>他是<em>文艺级吃货</em></dd>
-                    </dl>
-                </li>
-                <li>
-                    <img loadsrc="img/h.png"/>
-                    <dl>
-                        <dt><em>则卷</em>与你不是同款吃货</dt>
-                        <dd>他是<em>文艺级吃货</em></dd>
-                    </dl>
-                </li>
-                <li>
-                    <img loadsrc="img/h.png"/>
-                    <dl>
-                        <dt><em>则卷</em>与你不是同款吃货</dt>
-                        <dd>他是<em>文艺级吃货</em></dd>
-                    </dl>
-                </li-->
             </ul>
             <img class="img44 " loadsrc="img/4/chongxinfaqi.png" id="btnRestart1">
             <img class="img45 " loadsrc="img/4/chakanpaihang.png" id="btnPk">

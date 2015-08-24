@@ -123,7 +123,7 @@ body > .wrapper { max-width: 640px; overflow: hidden; margin: 0 auto; }
 .page4 .img41 { top: 2%; right: 0; width: 97.8%; }
 .page4 .img42 { top: 21%; left: 5%; width: 24.8%; transform: rotateY(180deg) scale(0); webkit-transform: rotateY(180deg) scale(0); }
 .page4 .img43 { top: 10.5%; left: 8.5%; width: 22.5%; border-radius: 50%; }
-.page4 .txt42 { top: 10%; left: 33%; }
+.page4 .txt42 { top: 8%; left: 33%; }
 .page4 .txt42 em { color: #FCA900; font-size: 1.2em; line-height: 1.5em; }
 .page4 .txt42 .detail { padding-right: 1em; font-size: .75em; line-height: 1.5em; }
 .page4 .txt44 { top: 30%; left: 25%; width: 50%; text-align: center; color: #FCA900; font-size: 1.25em; }

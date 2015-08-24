@@ -131,8 +131,9 @@ app.onshow = function (i) {
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
-                $(".page4 .txt42 .nickname").text(wx.owner.nickname), $(".page4 .txt42 .kind").text(wx.owner.result_kind),
-                    $(".page4 .txt42 .detail").text(wx.owner.result_detail);
+                $(".page4 .txt42 .nickname").text(wx.owner.nickname || wx.user.nickname),
+                    $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
+                    $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
             });
             break;
         case 4:
