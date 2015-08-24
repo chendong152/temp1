@@ -240,7 +240,6 @@ if ($myRec) $myRec = $myRec[0];
                     <div class="label">小栽4在工在枯葳基本原理</div>
                 </div> -->
             </div>
-            <img class="img36 animate" loadsrc="img/3/nv_3.png"/>
             <img class="img37 animate" loadsrc="img/3/quzhaotongkuan.png" id="btnGoResult"/>
             <script type="text/javascript">
                 $("#btnGoResult").click(function () {
