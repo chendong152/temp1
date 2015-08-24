@@ -98,13 +98,13 @@ if ($myRec) $myRec = $myRec[0];
 <div class="wrapper swiper-container2">
     <div class="con swiper-wrapper2">
         <div class="page swiper-slide2 active page1">
-            <img class="img1 " loadsrc="img/1/yun1.png"/>
             <img class="img2 animate" loadsrc="img/1/shuishinidecai.png"/>
             <img class="img2-2 animate" loadsrc="img/1/xuntongkuanchihuo.png"/>
             <img class="img3 animate" loadsrc="img/1/cai.png"/>
             <img class="img4 animate" loadsrc="img/1/nan.png"/>
             <img class="img5 animate" loadsrc="img/1/nv.png"/>
             <img class="img6 animate" loadsrc="img/1/start.png"/>
+            <img class="img6 animate" loadsrc="img/1/starttxt.png"/>
             <img class="img7 animate" loadsrc="img/1/youxishuoming.png"/>
             <script type="text/javascript">
                 $(".page1 .img6").click(function () {
@@ -114,31 +114,35 @@ if ($myRec) $myRec = $myRec[0];
         </div>
 
         <div class="page swiper-slide2 page2">
+            <div class="tip">
+                <img class="bg" loadsrc="img/2/layer.png">
+                <img class="btn" loadsrc="img/2/b1.png">
+                <script
+                    type="text/javascript">$(".page2>.tip>.btn").click(function () {$('.page>.tip').hide(100)})</script>
+            </div>
             <script>
                 var dishList = <?echo json_encode($allDishes,1)?>;
             </script>
-            <img class="img21 animate" loadsrc="img/2/meishinameduo.png"/>
+            <img class="img21 animate" loadsrc="img/2/s1.png"/>
 
-            <div class="dishes animate swiper-container">
+            <div class="dishes swiper-container">
                 <div class="swiper-wrapper origi">
-                    <?php
-                    foreach ($allDishes as $index => $dish) {
-                        ?>
-                        <div class="dish swiper-slide" data-id="<? echo $index ?>">
-                            <div><img loadsrc="<? echo $dish->img ?>"/></div>
-                            <div><? echo $dish->name ?></div>
-                        </div>
-                    <? } ?>
+                    <div class="swiper-slide">
+                        <?php
+                        foreach ($allDishes as $index => $dish) {
+                            ?>
+                            <div class="dish " data-id="<? echo $index ?>">
+                                <div><img loadsrc="<? echo preg_replace('/\.png$/', '0.png', $dish->img) ?>"/></div>
+                                <div><img loadsrc="<? echo $dish->img ?>"/></div>
+                            </div>
+                        <? } ?>
+                    </div>
                 </div>
             </div>
 
-            <!-- 如果需要导航按钮 -->
-            <div class="swiper-button-prev-m"></div>
-            <div class="swiper-button-next-m"></div>
-
             <script>
                 var mySwiper = new Swiper('.page2 .swiper-container', {
-                    slidesPerView: 3, spaceBetween: 10,//freeMode:true,
+                    slidesPerView: 1, spaceBetween: 10,//freeMode:true,
                     direction: 'horizontal', loop: false,
                 });
                 $(".swiper-button-prev-m").click(function () {
@@ -148,23 +152,20 @@ if ($myRec) $myRec = $myRec[0];
                     mySwiper.slideNext()
                 });
             </script>
-            <img class="img23 animate" loadsrc="img/2/yun2.png"/>
-            <img class="img24 animate" loadsrc="img/2/wenhao.png"/>
-
-            <div class="txt24 animate">从上面拖三个最想吃的菜</div>
-
-            <div class="my-dishes">
-            </div>
-            <img class="img25 animate" loadsrc="img/2/nv_2.png"/>
-            <img class="img26 animate" loadsrc="img/2/ok.png" id="btnCheck"/>
+            <img class="count" loadsrc="img/2/1.png"/>
+            <img class="img26 " loadsrc="img/2/nook.png"/>
+            <img class="img26 animate ok" loadsrc="img/2/ok.png" id="btnCheck"/>
 
             <script type="text/javascript">
-                $("#btnCheck").hide();
+                $("#btnCheck").hide(), $(".page2 .count").hide();
                 function visibleQuestion() {
-                    $(".page2 .txt24")[($('.page2 .my-dishes .dish').length > 0 ? 'hide' : 'show')]();
-                    $('.page2 .img26')[($('.page2 .my-dishes .dish').length != 3 ? 'hide' : 'show')]().css({opacity: 0}).transition({opacity: 1});
+                    var c = $('.page2 .dishes .dish.selected').length;
+                    $(".page2 .count").attr('src', 'img/2/' + c + '.png')[c < 1 ? 'hide' : 'show']() , $('.page2 .img26.ok')[(c != 3 ? 'hide' : 'show')]().css({opacity: 0}).transition({opacity: 1});
                 }
-                $('.page2 .dishes').swipe({
+                $('.page2 .dishes').delegate('.dish', 'click', function () {
+                    if ($('.page2 .dishes .dish.selected').length >= 3 && !$(this).hasClass('selected')) return;
+                    $(this).toggleClass('selected'), visibleQuestion();
+                }).swipe({
                     swipe: function (e, direction, distance, duration, fingerCount, fingerData) {
                         if ($('.page2 .my-dishes .dish').length >= 3 || direction != 'down') return;
                         var t = e.target;
@@ -176,22 +177,7 @@ if ($myRec) $myRec = $myRec[0];
                                     complete: function () {
                                         $(t).css({scale: 1}).hide()
                                     }
-                                }))
-                                    .css({animation: 'tada-soon 1s ease'}).appendTo($('.page2 .my-dishes'));
-                                visibleQuestion();
-                            }
-                        });
-                    }
-                });
-                $('.page2 .my-dishes').swipe({
-                    swipe: function (e, direction, distance, duration, fingerCount, fingerData) {
-                        if (direction != 'up') return;
-                        var t = e.target;
-                        while (t != null && !$(t).hasClass('dish'))t = $(t).parent();
-                        $(t).css({rotateY: '-360deg'}).transition({
-                            rotateY: '0deg', duration: 500, complete: function () {
-                                $(t).data('ori').show();
-                                $(t).remove();
+                                })).css({animation: 'tada-soon 1s ease'}).appendTo($('.page2 .my-dishes'));
                                 visibleQuestion();
                             }
                         });
@@ -200,7 +186,7 @@ if ($myRec) $myRec = $myRec[0];
                 $("#btnCheck").click(function () {
                     var self = this;
                     wx.user.dishes = [];
-                    $('.page2 .my-dishes .dish').each(function () {
+                    $('.page2 .dishes .dish.selected').each(function () {
                         wx.user.dishes.push($(this).data('id'));
                     });
                     if (wx.user.dishes.length != 3) return;
@@ -216,29 +202,24 @@ if ($myRec) $myRec = $myRec[0];
                             app.goTo(getParam('from_id') && !app.renew ? 3 : 2);
                         },
                     });
-                })
-                ;
+                });
             </script>
         </div>
 
         <div class="page swiper-slide2 page3">
-            <img class="img31 " loadsrc="img/3/jiangpai.png">
-
             <div class="txt32 animate">
                 <div style="" onclick="$('.con').css('transform','translateX(0) ')">
                     经鉴定，你是<em id="lblMsg">美食家</em>
                 </div>
                 <div id="lblMsg2" style=""></div>
             </div>
-            <img class="img33 animate" loadsrc="img/3/nan_1.png"/>
-            <img class="img34" loadsrc="img/3/yun3_1.png"/>
 
             <div class="my-dishes animate">
                 <script>
                     function showMyDishes() {
                         var s = '<div class="dish">'
                             + '<div><img src="{img}"/></div>'
-                            + '<div class="label">{name}</div>'
+                                //+ '<div class="label">{name}</div>'
                             + '</div>';
                         $('.page3 .my-dishes').empty();
                         for (var i in wx.user.dishes) {
@@ -259,9 +240,6 @@ if ($myRec) $myRec = $myRec[0];
                     <div class="label">小栽4在工在枯葳基本原理</div>
                 </div> -->
             </div>
-            <div class="img35 animate">
-                吃货的嘴是丰满的，但内心是骨感的，快快寻找身边的同款吃货，一起行走在去吃的路上吧
-            </div>
             <img class="img36 animate" loadsrc="img/3/nv_3.png"/>
             <img class="img37 animate" loadsrc="img/3/quzhaotongkuan.png" id="btnGoResult"/>
             <script type="text/javascript">
@@ -276,7 +254,7 @@ if ($myRec) $myRec = $myRec[0];
             <img class="img43 my-head" load="img/h.png"/>
 
             <div class="txt42">
-                <div><label class="nickname"></label>的吃货类别：<em class="kind"></em></div>
+                <div><label class="nickname"></label>是<em class="kind"></em></div>
                 <div class="detail"></div>
             </div>
 
@@ -322,7 +300,7 @@ if ($myRec) $myRec = $myRec[0];
                 </li-->
             </ul>
             <img class="img44 " loadsrc="img/4/chongxinfaqi.png" id="btnRestart1">
-            <img class="img45 " loadsrc="/img/4/chakanpaihang.png" id="btnPk">
+            <img class="img45 " loadsrc="img/4/chakanpaihang.png" id="btnPk">
             <script type="text/javascript">
                 $("#btnRestart1").click(function () {
                     app.start((app.renew = $('.page4 .img44[src*=metoo]').length == 0) ? 0 : 1);

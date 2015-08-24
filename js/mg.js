@@ -17,13 +17,13 @@ App.prototype = {
                             $(".page1 .img4").css({scale: 0, x: -50}).transition({
                                 scale: 1, x: 0, opacity: 1, delay: 300,
                                 complete: function () {
-                                    $(".page1 .img2-2").css({x: 100}).transition({
+                                    $(".page1 .img2-2").css({x: -100}).transition({
                                         x: 0, opacity: 1, delay: 100,
                                         complete: function () {
                                             $(this).css({animation: 'infinite tada 5s ease'});
                                         }
                                     });
-                                    $('.page1 .img2').css({x: 100}).transition({
+                                    $('.page1 .img2').css({x: -100}).transition({
                                         x: 0, opacity: 1, delay: 100,
                                         complete: function () {
                                             $(this).css({animation: 'infinite tada 5s ease'});
@@ -43,40 +43,22 @@ App.prototype = {
             });
         },
         p2: function () {
-            $('.page2 .dishes').css({scale: 0}).transition({
+            $(".page2 .img21").css({scale: 0, opacity: 0}).transition({
                 scale: 1, opacity: 1,
                 complete: function () {
-                    $(".page2 .img25").css({x: $(".page2 .img25").width()}).transition({
-                        x: 0, duration: 500, opacity: 1,
-                        complete: function () {
-                            $(".page2 .img21,.page2 .img23,.page2 .img24").css({scale: 0, opacity: 0}).transition({
-                                scale: 1, opacity: 1,
-                                complete: function () {
-                                    if (!this.d1) {
-                                        this.d1 = true;
-                                        $('.page2 .img21').css({animation: 'infinite tada2 5s ease'});
-                                        $(".page2 .img24").hide(), $(".page2 .txt24").show().css({opacity: 0}).transition({opacity: 1});
-                                    }
-                                }
-                            });
-                        }
-                    });
+                    this.d1 = true;
+                    $('.page2 .img21').css({animation: 'infinite tada2 5s ease'});
                 }
             });
         },
         p3: function () {
-            $('.page3 .img33').css({x: -100, opacity: 1}).transition({x: 0});
             $('.page3 .img36').css({x: 200, opacity: 1}).transition({
                 x: 0, complete: function () {
                     $('.page3 .my-dishes').css({}).transition({
                         opacity: 1, delay: 500, complete: function () {
                             $('.page3 .txt32').css({scale: 0}).transition({
                                 scale: 1, opacity: 1, delay: 500, complete: function () {
-                                    $('.page3 .img35').css({scale: 0}).transition({
-                                        scale: 1, opacity: 1, delay: 500, complete: function () {
-                                            $('.page3 .img37').css({}).transition({opacity: 1});
-                                        }
-                                    });
+                                    $('.page3 .img37').css({}).transition({opacity: 1});
                                 }
                             });
                         }
@@ -174,7 +156,7 @@ app.onshow = function (i) {
     return this;
 }
 $(function () {
-    app.init().renew=!getParam("from_id");
+    app.init().renew = !getParam("from_id");
 });
 
 function drawProcess(p) {

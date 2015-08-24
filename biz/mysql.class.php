@@ -8,7 +8,7 @@
  */
 
 include_once __DIR__ . '/../config/config.php';
-error_reporting(~E_WARNING & ~E_NOTICE);
+error_reporting(~E_WARNING & ~E_NOTICE &~E_DEPRECATED);
 
 class Mysql
 {
