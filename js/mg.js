@@ -52,15 +52,11 @@ App.prototype = {
             });
         },
         p3: function () {
-            $('.page3 .img36').css({x: 200, opacity: 1}).transition({
-                x: 0, complete: function () {
-                    $('.page3 .my-dishes').css({}).transition({
-                        opacity: 1, delay: 500, complete: function () {
-                            $('.page3 .txt32').css({scale: 0}).transition({
-                                scale: 1, opacity: 1, delay: 500, complete: function () {
-                                    $('.page3 .img37').css({}).transition({opacity: 1});
-                                }
-                            });
+            $('.page3 .my-dishes').css({}).transition({
+                opacity: 1, delay: 500, complete: function () {
+                    $('.page3 .txt32').css({scale: 0}).transition({
+                        scale: 1, opacity: 1, delay: 500, complete: function () {
+                            $('.page3 .img37').css({}).transition({opacity: 1});
                         }
                     });
                 }
@@ -81,8 +77,8 @@ App.prototype = {
     },
     start: function (i) {
         $('.page > .animate').css({opacity: 0});
-        $('.page2 .img1,.page1 .img6,.page1 .img7,.page1 .img2').css({animation: '1s'}),
-            $(".page2 .my-dishes").empty(), $('.page2 .dishes .dish').show(), mySwiper.slideTo(0), $('.page2 .txt24').hide();
+        $('.page1 .img6,.page1 .img7,.page1 .img2,.page1 .img2-2').css({animation: '1s'}),
+            $(".page2 .dishes .dish.selected").removeClass('selected'), $(".page2 .count").hide(), mySwiper.slideTo(0);
         return this.goTo(parseInt(i) || 0);
     },
     init: function () {
@@ -159,44 +155,3 @@ app.onshow = function (i) {
 $(function () {
     app.init().renew = !getParam("from_id");
 });
-
-function drawProcess(p) {
-    $('canvas.progress').each(function () {
-        var text = 'ing';// $(this).text();
-        var process = p;
-        text.substring(0, text.length - 1);
-        var canvas = this;
-        var context = canvas.getContext('2d'), width = $(this).width();
-
-        context.clearRect(0, 0, width, width);
-        context.beginPath();
-        context.moveTo(width / 2, width / 2);
-        context.arc(width / 2, width / 2, width / 2, 0, Math.PI * 2, false);
-        context.closePath();
-        context.fillStyle = '#ddd';
-        context.fill();
-        context.beginPath();
-        context.moveTo(width / 2, width / 2);
-        context.arc(width / 2, width / 2, width / 2, 0, Math.PI * 2 * process / 100, false);
-        context.closePath();
-        context.fillStyle = '#2a2';
-        context.fill();
-        context.beginPath();
-        context.moveTo(width / 2, width / 2);
-        context.arc(width / 2, width / 2, width / 2 - 3, 0, Math.PI * 2, true);
-        context.closePath();
-        context.fillStyle = 'rgba(255,255,255,1)';
-        context.fill();
-        context.beginPath();
-        context.arc(width / 2, width / 2, width / 2 * 18.5 / 24, 0, Math.PI * 2, true);
-        context.closePath();
-        context.strokeStyle = '#ddd';
-        context.stroke();
-        context.font = "bold 9pt Arial";
-        context.fillStyle = '#2a2';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.moveTo(width / 2, width / 2);
-        context.fillText(text, width / 2, width / 2);
-    });
-}
