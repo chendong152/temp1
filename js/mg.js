@@ -8,7 +8,7 @@ function App() {
 App.prototype = {
     _animates: {
         p1: function () {
-            $(".page1 .img5").css({x: -180}).transition({
+            $(".page1 .img5").css({x: -100}).transition({
                 x: 0, opacity: 1, delay: 100, duration: 500,
                 complete: function () {
                     $(".page1 .img3").css({scale: 0}).transition({

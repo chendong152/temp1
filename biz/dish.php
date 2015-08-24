@@ -83,5 +83,5 @@ function getText(Dish $dish) {
     global $allDesc;
     $scores = getScore($dish);
     $k = key($scores['high']) . '-' . key($scores['low']);
-    return $allDesc['taste-costEffective'];
+    return $allDesc[$k];
 }
