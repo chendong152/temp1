@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":"openid6","nickname": "NICKNAME","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"openid5","nickname": "Nick5","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
 else
@@ -343,10 +343,11 @@ if ($userOnWx) $user->subscribe = true;
                 $(".page5 .history").delegate('li', 'click', function () {
                     $.getJSON("biz/ajax.php?action=pkById", {id: $(this).data("id")}, function (data) {
                         $('.page5 .wrapper').transition({x: -2 * $(window).width()});
-                        var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
+                        var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与{master}的相似度{similar}%</dd></dl></li>';
                         var p = $(".page5 .items.his-cur").empty();
                         for (var i in data || []) {
                             var item = data[i];
+                            item.master = !wx.owner.openid || wx.user.openid == wx.owner.openid ? '你' : 'Ta';
                             item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
                             p.append($(replace(li, item)));
                         }

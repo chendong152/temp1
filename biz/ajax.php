@@ -156,10 +156,10 @@ function pk()
 
     $ret = array();
 
-    $ret['current'] = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$from");
-    usort($ret['current'], function ($i1, $i2) {
-        return $i2['similar'] - $i1['similar'];
-    });
+    $ret['current'] = $db->exec("select u.*,g.similar,g.count from savor_user u,(
+            select openid,AVG(similar) similar,count(1) count from savor_user_record
+            where from_openid='$openid'
+            GROUP BY openid) g where u.openid=g.openid order by similar desc");
 
     //返回（我的，不管本次是不是别人发起的）历史排行
     //$ret['history'] = $db->select("user_record")->where("where openid='{$user->openid}'")->done();

@@ -33,9 +33,9 @@ App.prototype = {
                                                     animation: 'bounceInDown 800ms ease-in'
                                                 });
                                                 $('.page1 .img8').transition({
-                                                    x: 0.5 * $('.page').width(), opacity: 1,delay:800,duration:500,
+                                                    x: 0.5 * $('.page').width(), opacity: 1, delay: 800, duration: 500,
                                                     complete: function () {
-                                                         $(".page1 .img6-2").css({opacity:1}).show();
+                                                        $(".page1 .img6-2").css({opacity: 1}).show();
                                                     }
                                                 });
                                             }, 1000);
@@ -133,7 +133,7 @@ app.onshow = function (i) {
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
-                $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0,4)+"是"),
+                $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0, 4) + "是"),
                     $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
                     $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
             });
@@ -144,7 +144,7 @@ app.onshow = function (i) {
                 var p = $(".page5 .items.current").empty();
                 for (var i in data.current || []) {
                     var item = data.current[i];
-                    item.master=wx.user.openid==wx.owner.openid?'你':'Ta';
+                    item.master = !wx.owner.openid || wx.user.openid == wx.owner.openid ? '你' : 'Ta';
                     item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
                     p.append($(replace(li, item)));
                 }
