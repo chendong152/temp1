@@ -60,6 +60,6 @@ function wx_get_user($openid) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $rec = curl_exec($ch);
-    $ret = json_encode($rec);
-    return $ret->subscribe == "1" ? $ret : null;
+    $ret = json_decode($rec);
+    return $ret->subscribe == 1 ? $ret : null;
 }

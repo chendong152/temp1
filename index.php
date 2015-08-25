@@ -42,7 +42,7 @@ $myRec = $db->exec("select * from savor_user_record where openid='{$user->openid
 if ($myRec) $myRec = $myRec[0];
 
 $userOnWx = wx_get_user($user->openid);
-if ($userOnWx) $user->subs = true;
+if ($userOnWx) $user->subscribe = true;
 ?>
 <!DOCTYPE html>
 <html>
@@ -243,7 +243,7 @@ if ($userOnWx) $user->subs = true;
                     <div class="label">小栽4在工在枯葳基本原理</div>
                 </div> -->
             </div>
-            <img class="img37 animate" loadsrc="img/3/quzhaotongkuan.png" id="btnGoResult"/>
+            <img class="img37 animate" loadsrc="img/3/start.png" id="btnGoResult"/>
             <script type="text/javascript">
                 $("#btnGoResult").click(function () {
                     app.willGo4 = true, $(".shares").show();
@@ -285,8 +285,8 @@ if ($userOnWx) $user->subs = true;
                 $("#btnRestart1").click(function () {
                     app.start((app.renew = $('.page4 .img44[src*=metoo]').length == 0) ? 0 : 1);
                 });
-                $("#btnPk").click(function () {
-                    wx.user.subs?app.nextPage():location.replace('http://mp.weixin.qq.com/s?__biz=MzA3NDg3NDI4OQ==&mid=208958565&idx=1&sn=64dae1a2f4a184a533a686053f34e4bd#rd');
+                $("#btnPk").click(function () {//alert(JSON.stringify('<?echo json_encode($userOnWx)?>'))
+                    wx.user.subscribe ? app.nextPage() : location.replace('http://mp.weixin.qq.com/s?__biz=MzA3NDg3NDI4OQ==&mid=208958565&idx=1&sn=64dae1a2f4a184a533a686053f34e4bd#rd');
                 });
             </script>
         </div>

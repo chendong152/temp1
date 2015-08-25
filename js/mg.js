@@ -128,7 +128,7 @@ app.onshow = function (i) {
                     item['thumb'] = item.result_kind == wx.owner.result_kind ? ++count && 'thumb' : '';
                     item['comp'] = item.result_kind == wx.owner.result_kind ? '' : '不';
                     item['disp'] = item.result_kind == wx.owner.result_kind ? 'display:none' : '';
-                    var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>他是<em>{result_kind}</em></dd></dl></li>';
+                    var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>Ta是<em>{result_kind}</em></dd></dl></li>';
                     li = '<li class="{thumb}"><table><tr><td><img class="head_img" src="{headimgurl}"/></td><td><em class="other_alias">{nickname}</em>与<span class="bench">{bench}</span><span class="verb">{comp}</span>是同款吃货</br><span style="{disp}">他是<em>{result_kind}</em></span></td></tr></table></li>'
                     $('.page4 .items').append($(replace(li, item)));
                 }
@@ -140,10 +140,11 @@ app.onshow = function (i) {
             break;
         case 4:
             $.getJSON('biz/ajax.php?action=pk', {from: getParam('from_id')}, function (data) {
-                var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与你的相似度{similar}%</dd></dl></li>';
+                var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与{master}的相似度{similar}%</dd></dl></li>';
                 var p = $(".page5 .items.current").empty();
                 for (var i in data.current || []) {
                     var item = data.current[i];
+                    item.master=wx.user.openid==wx.owner.openid?'你':'Ta';
                     item.index = parseInt(i) + 1, item.thumb = i < 3 ? 'thumb' : '', item.similar = parseFloat(item.similar).toFixed(0);
                     p.append($(replace(li, item)));
                 }
