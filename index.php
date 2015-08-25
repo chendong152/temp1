@@ -40,6 +40,9 @@ $bench = $db->exec("select * from savor_user_record r,savor_user u where r.openi
 if ($bench) $bench = $bench[0];
 $myRec = $db->exec("select * from savor_user_record where openid='{$user->openid}' and from_id=$from_id");
 if ($myRec) $myRec = $myRec[0];
+
+$userOnWx = wx_get_user($user->openid);
+if ($userOnWx) $user->subs = true;
 ?>
 <!DOCTYPE html>
 <html>
@@ -92,7 +95,7 @@ if ($myRec) $myRec = $myRec[0];
     });
 </script>
 <div class="loader">
-    <div class="progress">拼命中</div>
+    <div class="progress">努力加载中...</div>
     <canvas class="progress"></canvas>
 </div>
 <div class="wrapper swiper-container2">
@@ -103,9 +106,9 @@ if ($myRec) $myRec = $myRec[0];
             <img class="img3 animate" loadsrc="img/1/cai.png"/>
             <img class="img4 animate" loadsrc="img/1/nan.png"/>
             <img class="img5 animate" loadsrc="img/1/nv.png"/>
-            <img class="img6 animate" loadsrc="img/1/start.png"/>
-            <img class="img6 animate" loadsrc="img/1/starttxt.png"/>
-            <img class="img7 animate" loadsrc="img/1/youxishuoming.png"/>
+            <img class="img6 img6-1 animate" loadsrc="img/1/start.png"/>
+            <img class="img6 img6-2 animate" loadsrc="img/1/starttxt.png"/>
+            <img class="img8 animate" loadsrc="img/1/fdj.png"/>
             <script type="text/javascript">
                 $(".page1 .img6").click(function () {
                     app.nextPage(), $(".swing").removeClass("swing");
@@ -118,7 +121,7 @@ if ($myRec) $myRec = $myRec[0];
                 <img class="bg" loadsrc="img/2/layer.png">
                 <img class="btn" loadsrc="img/2/b1.png">
                 <script
-                    type="text/javascript">$(".page2>.tip>.btn").click(function () {$('.page>.tip').hide(100)})</script>
+                    type="text/javascript">$(".page2>.tip>.btn").click(function () {$('.page>.tip').hide()})</script>
             </div>
             <script>
                 var dishList = <?echo json_encode($allDishes,1)?>;
@@ -253,7 +256,7 @@ if ($myRec) $myRec = $myRec[0];
             <img class="img43 my-head" load="img/h.png"/>
 
             <div class="txt42">
-                <div><label class="nickname"></label>是<em class="kind"></em></div>
+                <div><label class="nickname1"></label><label>我是</label><em class="kind"></em></div>
                 <div class="detail"></div>
             </div>
 
@@ -283,7 +286,7 @@ if ($myRec) $myRec = $myRec[0];
                     app.start((app.renew = $('.page4 .img44[src*=metoo]').length == 0) ? 0 : 1);
                 });
                 $("#btnPk").click(function () {
-                    app.nextPage();
+                    wx.user.subs?app.nextPage():location.replace('http://mp.weixin.qq.com/s?__biz=MzA3NDg3NDI4OQ==&mid=208958565&idx=1&sn=64dae1a2f4a184a533a686053f34e4bd#rd');
                 });
             </script>
         </div>
@@ -317,14 +320,14 @@ if ($myRec) $myRec = $myRec[0];
                     </li>
                 </ul>
                 <ul class="items his-cur" style="">
-                    <li class="item thumb">
+                    <!--li class="item thumb">
                         <label class="index">1</label>
                         <img class="head_img" loadsrc="img/h.png">
                         <dl>
                             <dt>则卷</dt>
                             <dd>与你的相似度100%</dd>
                         </dl>
-                    </li>
+                    </li-->
                 </ul>
             </div>
 

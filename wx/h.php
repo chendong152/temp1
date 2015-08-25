@@ -6,8 +6,7 @@
  * Time: 10:25
  */
 require_once __DIR__ . '/../config/config.php';
-function wx_get_token()
-{
+function wx_get_token() {
     global $config;
     $token = S('access_token');
     if (!$token) {
@@ -25,8 +24,7 @@ function wx_get_token()
     return $token;
 }
 
-function wx_get_jsapi_ticket()
-{
+function wx_get_jsapi_ticket() {
     $ticket = "";
     do {
         $ticket = S('wx_ticket');
@@ -51,4 +49,17 @@ function wx_get_jsapi_ticket()
         S('wx_ticket', $ticket, 3600);
     } while (0);
     return $ticket;
+}
+
+function wx_get_user($openid) {
+    $token = wx_get_token();
+    $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=$token&openid=$openid&lang=zh_CN";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $rec = curl_exec($ch);
+    $ret = json_encode($rec);
+    return $ret->subscribe == "1" ? $ret : null;
 }

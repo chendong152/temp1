@@ -28,10 +28,16 @@ App.prototype = {
                                         complete: function () {
                                             $(this).css({animation: 'infinite tada 5s ease'});
                                             setTimeout(function () {
-                                                $('.page1 .img6,.page1 .img7').css({
+                                                $('.page1 .img6-1').css({
                                                     opacity: 1,
                                                     animation: 'bounceInDown 800ms ease-in'
-                                                })
+                                                });
+                                                $('.page1 .img8').transition({
+                                                    x: 0.5 * $('.page').width(), opacity: 1,delay:800,duration:500,
+                                                    complete: function () {
+                                                         $(".page1 .img6-2").css({opacity:1}).show();
+                                                    }
+                                                });
                                             }, 1000);
                                         }
                                     });
@@ -86,7 +92,7 @@ App.prototype = {
         if (!self.__inited) {
             this.imgCount = $("img[loadsrc]").load(function () {
                 var p = self.imgCount == 0 ? 0 : ++self.loadedCount / self.imgCount;
-                $(".loader .progress").text(parseInt(p * 100) + '%');
+                $(".loader .progress").text('努力加载中...' + parseInt(p * 100) + '%');
                 if (p == 1) {
                     $('.loader').transit({
                         x: -500, complete: function () {
@@ -127,7 +133,7 @@ app.onshow = function (i) {
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
-                $(".page4 .txt42 .nickname").text(wx.owner.nickname || wx.user.nickname),
+                $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0,4)+"是"),
                     $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
                     $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
             });
