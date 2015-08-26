@@ -117,7 +117,7 @@ app.onshow = function (i) {
         case  3:
             $('.page4 .my-head').attr('src', app.recId || !wx.owner.openid ? wx.user.headimgurl : wx.owner.headimgurl);
             $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done || (wx.myRec && wx.myRec.id > 0) ? '我也要玩.png' : 'metoo.png')));
-            $.getJSON('/biz/ajax.php?action=similar', {
+            $.getJSON('biz/ajax.php?action=similar', {
                 from: app.recId ? app.recId : getParam('from_id'),
                 bench: app.done ? 'me' : null
             }, function (data) {

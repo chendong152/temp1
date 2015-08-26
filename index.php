@@ -362,10 +362,11 @@ if ($userOnWx) $user->subscribe = true;
 </div>
 <script type="text/javascript">
     <?php
+        $schema=$_SERVER['REQUEST_SCHEME']?$_SERVER['REQUEST_SCHEME']:'http';
         $jsWx=array(
             'jsapi_ticket'=>wx_get_jsapi_ticket(),
             'timestamp'=>time(),
-            'url'=>"{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",//
+            'url'=>"$schema://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",//
             'nonceStr'=>'fkuwx'.time(),
         );
         ksort($jsWx);
@@ -373,7 +374,8 @@ if ($userOnWx) $user->subscribe = true;
         //echo "var input='$input'";
         $jsWx['signature']=strtolower(sha1($input));
     ?>
-    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host;
+    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host + '/savor_wx';//todo:分享地址
+    wx.url = '<?echo $jsWx['url']?>';
     wx.config(c = {
         debug: false,
         appId: "<?echo $config['appId']?>",
