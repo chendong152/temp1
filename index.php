@@ -168,23 +168,6 @@ if ($userOnWx) $user->subscribe = true;
                 $('.page2 .dishes').delegate('.dish', 'click', function () {
                     if ($('.page2 .dishes .dish.selected').length >= 3 && !$(this).hasClass('selected')) return;
                     $(this).toggleClass('selected'), visibleQuestion();
-                }).swipe({
-                    swipe: function (e, direction, distance, duration, fingerCount, fingerData) {
-                        if ($('.page2 .my-dishes .dish').length >= 3 || direction != 'down') return;
-                        var t = e.target;
-                        while (t != null && !$(t).hasClass('dish'))t = $(t).parent();
-                        $(t).css({rotateY: '-360deg'}).transition({
-                            rotateY: '0deg', duration: 500, complete: function () {
-                                $(t).clone().removeClass('swiper-slide').attr('style', '').data('ori', $(t).transition({
-                                    scale: 0,
-                                    complete: function () {
-                                        $(t).css({scale: 1}).hide()
-                                    }
-                                })).css({animation: 'tada-soon 1s ease'}).appendTo($('.page2 .my-dishes'));
-                                visibleQuestion();
-                            }
-                        });
-                    }
                 });
                 $("#btnCheck").click(function () {
                     var self = this;
