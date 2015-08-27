@@ -416,7 +416,7 @@ if ($userOnWx) $user->subscribe = true;
             background: rgba(0, 0, 0, 0.7);
             display: none;
         }
-        .shares > img { width: 100%; }
+        .shares > img { max-width: 100%; max-height: 100%; float: right; }
     </style>
     <script type="text/javascript">
         $(".shares").click(function () {
