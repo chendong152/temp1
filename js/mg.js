@@ -82,6 +82,7 @@ App.prototype = {
         return this.onshow && this.onshow.call(this, i) , this;
     },
     start: function (i) {
+        document.title='谁是你的菜';
         $('.page > .animate').css({opacity: 0});
         $('.page1 .img6,.page1 .img7,.page1 .img2,.page1 .img2-2').css({animation: '1s'}),
             $(".page2 .dishes .dish.selected").removeClass('selected'), $(".page2 .count").hide(), mySwiper.slideTo(0);
@@ -139,6 +140,7 @@ app.onshow = function (i) {
             });
             break;
         case 4:
+            document.title="我的缘分榜";
             $.getJSON('biz/ajax.php?action=pk', {from: getParam('from_id')}, function (data) {
                 var li = '<li class="item {thumb}"><label class="index">{index}</label><img class="head_img" src="{headimgurl}"><dl><dt>{nickname}</dt><dd>与{master}的相似度{similar}%</dd></dl></li>';
                 var p = $(".page5 .items.current").empty();
