@@ -17,8 +17,7 @@ session_start();
 echo json_encode(!empty($_GET['action']) ? $_GET['action']() : json_encode(array('code' => 404, 'msg' => '当前action不存在')));
 exit;
 
-function check()
-{
+function check() {
     global $allDishes, $config, $db;
     $user = json_decode($_SESSION['user']);
     if (!$user) return array('msg' => 'no user');
@@ -27,7 +26,8 @@ function check()
     $from = isset($_REQUEST['from']) ? $_REQUEST['from'] : null;
     $exists = $from == null ? false : $db->select('user_record')->where("id=$from")->done();
     if ($exists) $exists = $exists[0];
-    if ($exists['openid'] == $user->openid) return array('msg' => array('不能玩自己分享的哦'));
+    //if ($exists['openid'] == $user->openid)
+    //return array('msg' => array('不能玩自己分享的哦'));
 
     $ds = $_REQUEST['dishes'];
     $dishes = array($allDishes[$ds[0]], $allDishes[$ds[1]], $allDishes[$ds[2]]);
@@ -35,8 +35,8 @@ function check()
 
     //记录结果到库:用户基本信息、选择的3个菜品、最高分和最低分键值对、结果鉴定语、时间 (重玩时更新用户信息，新增游戏数据)
     $data = array(
-        'nickname' => $user->nickname,
-        'openid' => $user->openid,
+        'nickname'   => $user->nickname,
+        'openid'     => $user->openid,
         'headimgurl' => $user->headimgurl,
     );
     $exists = $db->select("user")->where("openid='{$data['openid']}'")->limit(1)->done();
@@ -56,15 +56,15 @@ function check()
     if ($exists)
         return array('msg' => array('本期已玩过了'));//一期只能玩一次
     $data = array(
-        'openid' => $data['openid'],
-        'dishes' => implode(',', $ds),
-        'style' => implode(',', array_values($merge->toArray())),
-        'score_high' => key($scores['high']) . ':' . current($scores['high']),
-        'score_low' => key($scores['low']) . ':' . current($scores['low']),
-        'result_kind' => $texts[0],
+        'openid'        => $data['openid'],
+        'dishes'        => implode(',', $ds),
+        'style'         => implode(',', array_values($merge->toArray())),
+        'score_high'    => key($scores['high']) . ':' . current($scores['high']),
+        'score_low'     => key($scores['low']) . ':' . current($scores['low']),
+        'result_kind'   => $texts[0],
         'result_detail' => $texts[1],
-        'from_id' => $from > 0 ? $from : null,
-        'from_openid' => isset($_REQUEST['from_openid']) ? $_REQUEST['from_openid'] : null,
+        'from_id'       => $from > 0 && $from != $user->openid ? $from : null, //如果是自己分享的，则设from_id为null
+        'from_openid'   => isset($_REQUEST['from_openid']) && $from != $user->openid ? $_REQUEST['from_openid'] : null,
     );
     //相似度
     if (!empty($data['from_id'])) {
@@ -81,8 +81,7 @@ function check()
     return array('code' => 0, 'score' => 1, 'msg' => $texts, 'id' => $id['id']);
 }
 
-function t()
-{
+function t() {
     print_r($_SERVER);
 }
 
@@ -91,8 +90,7 @@ function t()
  * @return array
  *
  */
-function similar()
-{
+function similar() {
     global $db;
     $tn = 'user_record';
     $current = json_decode($_SESSION['user']);//当前玩家
@@ -132,8 +130,7 @@ function similar()
     //如果好友从分享的链接点出来，前端显示“我是同味吃货吗”，让好友游戏
 }
 
-function pk()
-{
+function pk() {
     global $db;
     $user = json_decode($_SESSION['user']);
     $openid = $user->openid;//假设为登陆用户
@@ -174,8 +171,7 @@ SELECT  id,create_time,0 from savor_user_record r2 where openid='{$openid}' and 
 }
 
 //根据记录id，获取对应期的排行
-function pkById($id = null)
-{
+function pkById($id = null) {
     global $db;
     $id = $id ? $id : $_REQUEST['id'];
     $rs = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$id");

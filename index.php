@@ -47,10 +47,6 @@ if ($userOnWx) $user->subscribe = true;
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
-    <meta http-equiv="Expires" content="0"/>
-
     <meta name="imagemode" content="force">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -357,7 +353,7 @@ if ($userOnWx) $user->subscribe = true;
         //echo "var input='$input'";
         $jsWx['signature']=strtolower(sha1($input));
     ?>
-    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host + '/savor_wx';//todo:分享地址
+    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host + '';//todo:分享地址
     wx.url = '<?echo $jsWx['url']?>';
     wx.config(c = {
         debug: false,
