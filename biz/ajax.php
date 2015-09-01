@@ -105,15 +105,15 @@ function similar() {
         //查找本期(除当前玩家外。基于：一个玩家一期只能玩一次)所有参与记录
         $sql = "select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id={$from_id}  order by similar DESC ";
         $rs = $db->exec($sql);//select($tn)->where("from_id=$from and openid<>'{$current->openid}'")->done();
+        if(!$rs)
+            return array();
 
         //计算所有参与记录与当前玩家的相似度
         // $me = $db->select($tn)->where("from_id=$from_id and openid='{$current->openid}'")->done();//当前玩家数据
         //if (is_array($me)) $me = $me[0];//当前玩家的本次游戏记录
         // if (!$me) return array();
 
-        $similars = array_map(function ($r) use (/*$me,*/
-            $bench, $current
-        ) {
+        $similars = array_map(function ($r) use ($bench, $current) {
             //$r['similar'] = User::match(get_dish($me['dishes']), get_dish($r['dishes']));
             $r['bench'] = $bench['openid'] == $current->openid ? '你' : $bench['nickname'];
             return $r;
@@ -160,11 +160,14 @@ function pk() {
 
     //返回（我的，不管本次是不是别人发起的）历史排行
     //$ret['history'] = $db->select("user_record")->where("where openid='{$user->openid}'")->done();
-    $sql = "select * from (select id,create_time,count from savor_user_record r,
-(SELECT from_id,count(1) count FROM `savor_user_record` where from_openid='$openid' group by from_id) g
+    $sql = "select * from (select id,create_time,count,total from savor_user_record r,
+(select d.from_id,count(1) total,count(bench.id) count from savor_user_record d
+left join savor_user_record bench on d.from_id=bench.id and d.result_kind=bench.result_kind
+where d.from_openid='$openid'
+GROUP BY d.from_id) g
 where r.id=g.from_id
 union
-SELECT  id,create_time,0 from savor_user_record r2 where openid='{$openid}' and not EXISTS(select * from savor_user_record where from_id=r2.id))t order by create_time desc";
+SELECT  id,create_time,0,0 from savor_user_record r2 where openid='{$openid}' and not EXISTS(select * from savor_user_record where from_id=r2.id))t order by create_time desc";
     $ret['history'] = $db->exec($sql);
 
     return $ret;

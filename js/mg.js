@@ -117,7 +117,7 @@ app.onshow = function (i) {
     switch (i) {
         case  3:
             $('.page4 .my-head').attr('src', app.recId || !wx.owner.openid ? wx.user.headimgurl : wx.owner.headimgurl);
-            $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done || (wx.myRec && wx.myRec.id > 0) ? '我也要玩.png' : 'metoo.png')));
+            $(".page4 .img44").attr("src", 'img/4/' + ( !wx.owner.openid || wx.owner.openid == wx.user.openid ? 'chongxinfaqi.png' : (app.done || (wx.myRec && wx.myRec.id > 0) ? 'iwant.png' : 'metoo.png')));
             $.getJSON('biz/ajax.php?action=similar', {
                 from: app.recId ? app.recId : getParam('from_id'),
                 bench: app.done ? 'me' : null
@@ -134,10 +134,10 @@ app.onshow = function (i) {
                     $('.page4 .items').append($(replace(li, item)));
                 }
                 $('.page4 .txt44 .count').text(count);
-                $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0, 4) + "是"),
-                    $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
-                    $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
             });
+            $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0, 4) + "是"),
+                $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
+                $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
             break;
         case 4:
             document.title="我的缘分榜";
@@ -151,7 +151,7 @@ app.onshow = function (i) {
                     p.append($(replace(li, item)));
                 }
                 p = $(".page5 .items.history").empty();
-                li = '<li class="item" data-id={id}><div><label class="l">{date}</label><label>共找到{count}个同款</label></div></li>'
+                li = '<li class="item" data-id={id}><div><label class="l">{date}</label><label>{total}好友参与，找到{count}个同款</label></div></li>'
                 for (var i in data.history || []) {
                     var item = data.history[i];
                     item.date = item.create_time.substr(0, 10);

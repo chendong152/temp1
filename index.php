@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":"openid5","nickname": "Nick5","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"openid12","nickname": "昵称多12","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
 else
@@ -35,7 +35,7 @@ else
 if (!$user)
     exit('no user');
 
-$from_id = isset($_REQUEST['from_id']) ? $_REQUEST['from_id'] : null;
+$from_id = isset($_REQUEST['from_id']) ? $_REQUEST['from_id'] : 0;
 $bench = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.id=$from_id");
 if ($bench) $bench = $bench[0];
 $myRec = $db->exec("select * from savor_user_record where openid='{$user->openid}' and from_id=$from_id");
@@ -353,7 +353,7 @@ if ($userOnWx) $user->subscribe = true;
         //echo "var input='$input'";
         $jsWx['signature']=strtolower(sha1($input));
     ?>
-    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host + '';//todo:分享地址
+    wx = window.wx || {}, wx.config = wx.config || {}, host = 'http://' + location.host + location.pathname;//todo:分享地址
     wx.url = '<?echo $jsWx['url']?>';
     wx.config(c = {
         debug: false,
