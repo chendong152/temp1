@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     }
 }
 
-$user = !$isWx ? json_decode('{"openid":"openid12","nickname": "昵称多12","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
+$user = !$isWx ? json_decode('{"openid":"osdtGt0fNLEN_rg0GcfGpBoDF5tE","nickname": "点上吧","sex":"1", "city":"CITY","country":"COUNTRY","headimgurl":"http:\/\/cc.om"}') : null;
 if (isset($_SESSION['user']))
     $user = json_decode($_SESSION['user']);
 else
@@ -38,6 +38,7 @@ if (!$user)
 $from_id = isset($_REQUEST['from_id']) ? $_REQUEST['from_id'] : 0;
 $bench = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.id=$from_id");
 if ($bench) $bench = $bench[0];
+
 $myRec = $db->exec("select * from savor_user_record where openid='{$user->openid}' and from_id=$from_id");
 if ($myRec) $myRec = $myRec[0];
 
@@ -65,9 +66,14 @@ if ($userOnWx) $user->subscribe = true;
     <script src="wx/sdk.js"></script>
 </head>
 <body>
+<?
+
+if($from_id &&!$bench)
+	exit("<div class='fib'>此分享已过期，您可在公众号菜单中重新发送哦！<a href='http://{$_SERVER['HTTP_HOST']}/savor_wx'>我要发起</a></div></body></html>");
+?>
 <script type="text/javascript">
     onerror = function (m) {
-        alert(m);
+        //alert(m);
     }
 </script>
 <script type="text/javascript">
@@ -376,6 +382,7 @@ if ($userOnWx) $user->subscribe = true;
             var t = r();
             return host + "?from_openid=" + (t ? t.openid : '') + (t ? "&p=3&from_id=" + t.id : '');
         }, success: function (ret) {
+			$.post('biz/ajax.php?action=shared',{id:app.recId});
             app.willGo4 && app.goTo(3);
             $(".shares").hide();
         }

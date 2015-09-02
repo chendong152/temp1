@@ -51,6 +51,7 @@ body > .wrapper { max-width: 640px; overflow: hidden; margin: 0 auto; }
     0% { transform: rotate(0deg); -webkit-transform: rotate(0deg); }
     100% { transform: rotate(360deg); -webkit-transform: rotate(360deg); }
 }
+.fib{color:black;}
 .swing { animation: infinite swing 1.5s linear; -webkit-animation: infinite swing 1.5s linear; }
 .swing.only { animation: swing 1.5s linear; -webkit-animation: swing 1.5s linear; }
 .con { width: 100%; height: 100%; overflow: hidden; transition: 0.5s; -webkit-transition: .5s; }
@@ -163,4 +164,5 @@ body > .wrapper { max-width: 640px; overflow: hidden; margin: 0 auto; }
 .page5 .items.history .item > * { height: 3.5em; position: absolute; top: 50%; left: 10%; margin-top: -1.75em; }
 .page5 .items.history .item > * > * { display: block; }
 .page5 .items.history .item > * > .l { font-size: 1.25em; }
+.page5 .items.history .item.active { color:greenyellow }
 

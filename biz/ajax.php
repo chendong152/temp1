@@ -119,12 +119,12 @@ function similar() {
             return $r;
         }, $rs);
         //获取相似度最高的前3人
-        usort($similars, function ($item1, $item2) {
+        /*usort($similars, function ($item1, $item2) {
             return $item2['similar'] - $item1['similar'];
-        });
+        });*/
 
         //返回
-        return array_slice($similars, 0, 3);
+        return $similars;//array_slice($similars, 0, 3);
     }
     return array();
     //如果好友从分享的链接点出来，前端显示“我是同味吃货吗”，让好友游戏
@@ -158,16 +158,17 @@ function pk() {
             where from_openid='$openid'
             GROUP BY openid) g where u.openid=g.openid order by similar desc");
 
-    //返回（我的，不管本次是不是别人发起的）历史排行
+    //返回from的历史排行
     //$ret['history'] = $db->select("user_record")->where("where openid='{$user->openid}'")->done();
     $sql = "select * from (select id,create_time,count,total from savor_user_record r,
 (select d.from_id,count(1) total,count(bench.id) count from savor_user_record d
 left join savor_user_record bench on d.from_id=bench.id and d.result_kind=bench.result_kind
-where d.from_openid='$openid'
+where d.from_openid='$openid' and exists(select 1 from savor_user_record x where d.from_id=x.id and x.shared=1)
 GROUP BY d.from_id) g
 where r.id=g.from_id
 union
-SELECT  id,create_time,0,0 from savor_user_record r2 where openid='{$openid}' and not EXISTS(select * from savor_user_record where from_id=r2.id))t order by create_time desc";
+SELECT  id,create_time,0,0 from savor_user_record r2 where openid='{$openid}' and r2.shared=1 and not EXISTS(select * from savor_user_record where from_id=r2.id)
+)t order by create_time desc";
     $ret['history'] = $db->exec($sql);
 
     return $ret;
@@ -177,9 +178,18 @@ SELECT  id,create_time,0,0 from savor_user_record r2 where openid='{$openid}' an
 function pkById($id = null) {
     global $db;
     $id = $id ? $id : $_REQUEST['id'];
-    $rs = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$id");
-    usort($rs, function ($i1, $i2) {
+    $rs = $db->exec("select * from savor_user_record r,savor_user u where r.openid=u.openid and r.from_id=$id order by r.similar desc");
+    /*usort($rs, function ($i1, $i2) {
         return $i2['similar'] - $i1['similar'];
-    });
+    });*/
     return $rs;
+}
+
+function shared($id){
+	global $db;
+	$id=$id ? $id : $_REQUEST['id'];
+    if($id)
+		$id = $db->exec("update savor_user_record set shared=1 where id=$id");
+	
+    return $id!==false ? array('code'=>0,'msg'=>'ok'):array('code'=>1,'msg'=>'失败了'.$id);
 }

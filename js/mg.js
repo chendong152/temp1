@@ -122,22 +122,21 @@ app.onshow = function (i) {
                 from: app.recId ? app.recId : getParam('from_id'),
                 bench: app.done ? 'me' : null
             }, function (data) {
-                var count = 0;
                 $('.page4 .items').empty();
-                for (var i in data) {
+                for (var i=0;i<data.length&&i<3;i++) {
                     var item = data[i];
-                    item['thumb'] = item.result_kind == wx.owner.result_kind ? ++count && 'thumb' : '';
+                    item['thumb'] = item.result_kind == wx.owner.result_kind ? 'thumb' : '';
                     item['comp'] = item.result_kind == wx.owner.result_kind ? '' : '不';
                     item['disp'] = item.result_kind == wx.owner.result_kind ? 'display:none' : '';
                     var li = '<li class="{thumb}"><img src="{headimgurl}"/><dl><dt><em>{nickname}</em>与{bench}{comp}是同款吃货</dt><dd>Ta是<em>{result_kind}</em></dd></dl></li>';
                     li = '<li class="{thumb}"><table><tr><td><img class="head_img" src="{headimgurl}"/></td><td><em class="other_alias">{nickname}</em>与<span class="bench">{bench}</span><span class="verb">{comp}</span>是同款吃货</br><span style="{disp}">他是<em>{result_kind}</em></span></td></tr></table></li>'
                     $('.page4 .items').append($(replace(li, item)));
                 }
-                $('.page4 .txt44 .count').text(count);
+                $('.page4 .txt44 .count').text(data.filter(function(c){return c.result_kind == wx.owner.result_kind}).length);
             });
-            $(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0, 4) + "是"),
-                $(".page4 .txt42 .kind").text(wx.owner.result_kind || wx.user.kind),
-                $(".page4 .txt42 .detail").text(wx.owner.result_detail || wx.user.detail);
+            //$(".page4 .txt42 .nickname").text((wx.owner.nickname || wx.user.nickname).substr(0, 4) + "是"),
+                $(".page4 .txt42 .kind").text(app.recId? wx.user.kind:wx.owner.result_kind  ),
+                $(".page4 .txt42 .detail").text(app.recId? wx.user.detail:wx.owner.result_detail);
             break;
         case 4:
             document.title="我的缘分榜";
@@ -151,9 +150,10 @@ app.onshow = function (i) {
                     p.append($(replace(li, item)));
                 }
                 p = $(".page5 .items.history").empty();
-                li = '<li class="item" data-id={id}><div><label class="l">{date}</label><label>{total}好友参与，找到{count}个同款</label></div></li>'
+                li = '<li class="item {active}" data-id={id}><div><label class="l">{date}</label><label>{total}好友参与，找到{count}个同款</label></div></li>'
                 for (var i in data.history || []) {
                     var item = data.history[i];
+					item.active = wx.owner.id == item.id ? 'active' : '';
                     item.date = item.create_time.substr(0, 10);
                     p.append($(replace(li, item)));
                 }
